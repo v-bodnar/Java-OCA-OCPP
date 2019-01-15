@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.chargetime.ocpp</groupId>
-    <artifactId>all</artifactId>
+    <artifactId>OCPP-Server</artifactId>
     <version>0.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -29,6 +29,14 @@
         </developer>
     </developers>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.eluder.coveralls</groupId>
+            <artifactId>coveralls-maven-plugin</artifactId>
+            <version>4.3.0</version>
+        </dependency>
+    </dependencies>
+
     <scm>
         <connection>scm:git:git://github.com/ChargeTimeEU/Java-OCA-OCPP.git</connection>
         <developerConnection>scm:git:ssh://github.com:ChargeTimeEU/Java-OCA-OCPP.git</developerConnection>
@@ -38,7 +46,7 @@
     <modules>
         <module>ocpp-common</module>
         <module>ocpp-v1_6</module>
-        <module>ocpp-v1_6-test</module>
+        <!--<module>ocpp-v1_6-test</module>-->
     </modules>
 
     <build>
