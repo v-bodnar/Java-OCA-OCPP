@@ -1,6 +1,6 @@
 package eu.chargetime.ocpp.rest;
 
-import eu.chargetime.ocpp.JSONServerSample;
+import eu.chargetime.ocpp.OcppServerService;
 import eu.chargetime.ocpp.NotConnectedException;
 import eu.chargetime.ocpp.OccurenceConstraintException;
 import eu.chargetime.ocpp.UnsupportedFeatureException;
@@ -50,7 +50,7 @@ public class RestAPI {
 
     private Response sendRequest(Request request) {
         try {
-            JSONServerSample.sendToAll(request);
+            OcppServerService.sendToAll(request);
             return Response.ok().build();
         } catch (NotConnectedException | OccurenceConstraintException | UnsupportedFeatureException e) {
             e.printStackTrace();

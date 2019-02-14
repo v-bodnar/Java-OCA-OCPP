@@ -81,7 +81,7 @@ public class StartTransactionRequest implements Request {
     }
 
     /**
-     * This contains the identifier for which a transaction has to be started.
+     * This contains the identifier for which a transaction has to be start.
      *
      * @return the IdToken.
      */
@@ -90,7 +90,7 @@ public class StartTransactionRequest implements Request {
     }
 
     /**
-     * Required. This contains the identifier for which a transaction has to be started.
+     * Required. This contains the identifier for which a transaction has to be start.
      *
      * @param idTag a String with max length 20
      * @throws PropertyConstraintException  field isn't filled out correct.
@@ -142,7 +142,7 @@ public class StartTransactionRequest implements Request {
     }
 
     /**
-     * This contains the date and time on which the transaction is started.
+     * This contains the date and time on which the transaction is start.
      *
      * @return start time.
      */
@@ -151,7 +151,7 @@ public class StartTransactionRequest implements Request {
     }
 
     /**
-     * This contains the date and time on which the transaction is started.
+     * This contains the date and time on which the transaction is start.
      *
      * @return start time.
      */
@@ -161,7 +161,7 @@ public class StartTransactionRequest implements Request {
     }
 
     /**
-     * Required. This contains the date and time on which the transaction is started.
+     * Required. This contains the date and time on which the transaction is start.
      *
      * @param timestamp Calendar, start time.
      */

@@ -20,7 +20,8 @@ import eu.chargetime.ocpp.model.firmware.GetDiagnosticsConfirmation;
 import eu.chargetime.ocpp.model.firmware.GetDiagnosticsRequest;
 import eu.chargetime.ocpp.model.firmware.UpdateFirmwareConfirmation;
 import eu.chargetime.ocpp.model.firmware.UpdateFirmwareRequest;
-import eu.chargetime.ocpp.rest.WebServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -55,21 +56,13 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-public class JSONServerSample {
+public class OcppServerService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OcppServerService.class);
     private static JSONServer server;
     private static ServerCoreProfile core;
     private static Map<UUID, SessionInformation> sessionList = new HashMap<>();
     private static final ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(1);
     private static JSONCommunicator jsonCommunicator = new JSONCommunicator(null);
-
-    public static void main(String... args) {
-        try {
-            new WebServer(8080).startServer();
-            started();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public static void send(Request request) {
         for (Map.Entry<UUID, SessionInformation> entry : sessionList.entrySet()) {
@@ -91,12 +84,10 @@ public class JSONServerSample {
         }
     }
 
-    public static void started() throws Exception {
+    public static void start() {
         if (server != null) {
             return;
         }
-
-
         // The core profile is mandatory
         core = new ServerCoreProfile(new OcppEventHandler());
         server = new JSONServer(core);
@@ -104,25 +95,25 @@ public class JSONServerSample {
         ClientFirmwareManagementEventHandler client = new ClientFirmwareManagementEventHandler() {
             @Override
             public GetDiagnosticsConfirmation handleGetDiagnosticsRequest(GetDiagnosticsRequest request) {
-                System.out.println(request.getClass().getSimpleName() + " - " + jsonCommunicator.packPayload(request));
+                LOGGER.debug(request.getClass().getSimpleName() + " - " + jsonCommunicator.packPayload(request));
                 return null;
             }
 
             @Override
             public DiagnosticsStatusNotificationConfirmation handleDiagnosticsStatusNotificationRequest(DiagnosticsStatusNotificationRequest request) {
-                System.out.println(request.getClass().getSimpleName() + " - " + jsonCommunicator.packPayload(request));
+                LOGGER.debug(request.getClass().getSimpleName() + " - " + jsonCommunicator.packPayload(request));
                 return new DiagnosticsStatusNotificationConfirmation();
             }
 
             @Override
             public FirmwareStatusNotificationConfirmation handleFirmwareStatusNotificationRequest(FirmwareStatusNotificationRequest request) {
-                System.out.println(request.getClass().getSimpleName() + " - " + jsonCommunicator.packPayload(request));
+                LOGGER.debug(request.getClass().getSimpleName() + " - " + jsonCommunicator.packPayload(request));
                 return null;
             }
 
             @Override
             public UpdateFirmwareConfirmation handleUpdateFirmwareRequest(UpdateFirmwareRequest request) {
-                System.out.println(request.getClass().getSimpleName() + " - " + jsonCommunicator.packPayload(request));
+                LOGGER.debug(request.getClass().getSimpleName() + " - " + jsonCommunicator.packPayload(request));
                 return null;
             }
         };
@@ -133,13 +124,13 @@ public class JSONServerSample {
             public void newSession(UUID sessionIndex, SessionInformation information) {
 
                 // sessionIndex is used to send messages.
-                System.out.println("New session " + sessionIndex + ": " + information.getIdentifier());
+                LOGGER.debug("New session " + sessionIndex + ": " + information.getIdentifier());
                 sessionList.put(sessionIndex, information);
             }
 
             @Override
             public void lostSession(UUID sessionIndex) {
-                System.out.println("Session " + sessionIndex + " lost connection");
+                LOGGER.debug("Session " + sessionIndex + " lost connection");
                 sessionList.remove(sessionIndex);
             }
         });
@@ -153,7 +144,7 @@ public class JSONServerSample {
         UUID sessionIndex = null;
         // Server returns a promise which will be filled once it receives a confirmation.
         // Select the distination client with the sessionIndex integer.
-        server.send(sessionIndex, request).whenComplete((confirmation, throwable) -> System.out.println(confirmation));
+        server.send(sessionIndex, request).whenComplete((confirmation, throwable) -> LOGGER.debug(confirmation.toString()));
     }
 
     public static void sendResetRequest(Integer delay) {
@@ -161,7 +152,7 @@ public class JSONServerSample {
                 new java.util.TimerTask() {
                     @Override
                     public void run() {
-                        System.out.println("Sending ResetRequest");
+                        LOGGER.debug("Sending ResetRequest");
                         ResetRequest resetRequest = new ResetRequest();
                         resetRequest.setType(ResetType.Soft);
                         send(resetRequest);
@@ -175,7 +166,7 @@ public class JSONServerSample {
                 new java.util.TimerTask() {
                     @Override
                     public void run() {
-                        System.out.println("Sending getDiagnosticsRequest");
+                        LOGGER.debug("Sending getDiagnosticsRequest");
                         Calendar startTime = new GregorianCalendar(2018, 5, 24);
                         Calendar stopTime = new GregorianCalendar(2018, 5, 30);
                         GetDiagnosticsRequest getDiagnosticsRequest = new GetDiagnosticsRequest();
@@ -195,12 +186,12 @@ public class JSONServerSample {
                 new java.util.TimerTask() {
                     @Override
                     public void run() {
-                        System.out.println("Sending ChangeAvailability" + availabilityType);
+                        LOGGER.debug("Sending ChangeAvailability" + availabilityType);
                         ChangeAvailabilityRequest changeAvailabilityRequest = new ChangeAvailabilityRequest();
                         try {
                             changeAvailabilityRequest.setConnectorId(1);
                         } catch (PropertyConstraintException e) {
-                            System.out.println("Should not happen");
+                            LOGGER.debug("Should not happen");
                         }
                         changeAvailabilityRequest.setType(availabilityType);
                         send(changeAvailabilityRequest);
@@ -214,7 +205,7 @@ public class JSONServerSample {
                 new java.util.TimerTask() {
                     @Override
                     public void run() {
-                        System.out.println("Sending ChangeConfiguration");
+                        LOGGER.debug("Sending ChangeConfiguration");
                         ChangeConfigurationRequest changeConfigurationRequest = new ChangeConfigurationRequest();
                         try {
                             changeConfigurationRequest.setKey("FreevendEnabled");
@@ -270,4 +261,17 @@ public class JSONServerSample {
                 }, delay * 1000
         );
     }
+
+    public static void stop() {
+        server.close();
+        server = null;
+        core = null;
+        sessionList = new HashMap<>();
+        jsonCommunicator = new JSONCommunicator(null);
+    }
+
+    public static boolean isRunning() {
+        return server != null && !server.isClosed();
+    }
+
 }

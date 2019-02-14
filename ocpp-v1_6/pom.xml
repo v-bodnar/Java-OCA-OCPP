@@ -123,12 +123,39 @@
                 <version>3.5.1</version>
             </plugin>
             <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>8.8.3</version>
+                <configuration>
+                    <vendor>chargetime</vendor>
+                    <mainClass>eu.chargetime.ocpp.gui.GuiApplication</mainClass>
+                    <jfxMainAppJarName>OcppServer.jar</jfxMainAppJarName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <!-- required before build-native -->
+                        <id>create-jfxjar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build-jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-native</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build-native</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <finalName>OcppServer</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>eu.chargetime.ocpp.JSONServerSample</mainClass>
+                            <mainClass>eu.chargetime.ocpp.OcppServerService</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
