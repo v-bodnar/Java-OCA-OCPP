@@ -155,7 +155,7 @@
                     <finalName>OcppServer</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>eu.chargetime.ocpp.OcppServerService</mainClass>
+                            <mainClass>eu.chargetime.ocpp.gui.GuiApplication</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

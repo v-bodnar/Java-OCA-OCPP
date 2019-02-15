@@ -1,8 +1,8 @@
 package eu.chargetime.ocpp.rest;
 
-import eu.chargetime.ocpp.OcppServerService;
 import eu.chargetime.ocpp.NotConnectedException;
 import eu.chargetime.ocpp.OccurenceConstraintException;
+import eu.chargetime.ocpp.server.OcppServerService;
 import eu.chargetime.ocpp.UnsupportedFeatureException;
 import eu.chargetime.ocpp.model.Request;
 import eu.chargetime.ocpp.model.core.ChangeAvailabilityRequest;
@@ -24,6 +24,8 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class RestAPI {
     private final Logger logger = LoggerFactory.getLogger(RestAPI.class);
+    private final OcppServerService ocppServerService = new OcppServerService();
+
     @POST
     @Path("send-reset-request")
     public Response sendResetRequest(ResetRequest resetRequest) {
@@ -50,7 +52,7 @@ public class RestAPI {
 
     private Response sendRequest(Request request) {
         try {
-            OcppServerService.sendToAll(request);
+            ocppServerService.sendToAll(request);
             return Response.ok().build();
         } catch (NotConnectedException | OccurenceConstraintException | UnsupportedFeatureException e) {
             e.printStackTrace();

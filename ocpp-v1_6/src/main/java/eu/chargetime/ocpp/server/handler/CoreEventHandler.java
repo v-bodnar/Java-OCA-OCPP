@@ -1,7 +1,9 @@
-package eu.chargetime.ocpp;
+package eu.chargetime.ocpp.server.handler;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import eu.chargetime.ocpp.JSONCommunicator;
+import eu.chargetime.ocpp.PropertyConstraintException;
 import eu.chargetime.ocpp.feature.profile.ServerCoreEventHandler;
 import eu.chargetime.ocpp.model.core.AuthorizationStatus;
 import eu.chargetime.ocpp.model.core.AuthorizeConfirmation;
@@ -32,7 +34,7 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.UUID;
 
-public class OcppEventHandler implements ServerCoreEventHandler {
+public class CoreEventHandler implements ServerCoreEventHandler {
     private static JSONCommunicator jsonCommunicator = new JSONCommunicator(null);
 
     @Override

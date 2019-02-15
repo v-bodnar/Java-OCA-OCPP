@@ -10,10 +10,15 @@ import javafx.stage.Stage;
 
 public class GuiApplication extends Application {
 
+    public static void main(String... args) throws Exception {
+        ApplicationContext.INSTANCE.getWebServer().startServer();
+        ApplicationContext.INSTANCE.getOcppServerService().start();
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         createMainScene(primaryStage);
-        new WebServer(8080).startServer();
+        ApplicationContext.INSTANCE.getWebServer().startServer();
     }
 
     public void createMainScene(Stage primaryStage) {
@@ -28,6 +33,7 @@ public class GuiApplication extends Application {
 
         TabPane tabPane = new TabPane();
         tabPane.getTabs().add(new GeneralTab().constructTab());
+        tabPane.getTabs().add(new CommunicatorTab().constructTab());
         borderPane.setCenter(tabPane);
 
         primaryStage.setTitle("Ocpp Server");

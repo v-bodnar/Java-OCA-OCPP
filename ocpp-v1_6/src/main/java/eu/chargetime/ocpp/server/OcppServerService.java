@@ -1,7 +1,14 @@
-package eu.chargetime.ocpp;
+package eu.chargetime.ocpp.server;
 
-import eu.chargetime.ocpp.feature.profile.ClientFirmwareManagementEventHandler;
+import eu.chargetime.ocpp.JSONServer;
+import eu.chargetime.ocpp.NotConnectedException;
+import eu.chargetime.ocpp.OccurenceConstraintException;
+import eu.chargetime.ocpp.server.handler.CoreEventHandler;
+import eu.chargetime.ocpp.PropertyConstraintException;
+import eu.chargetime.ocpp.ServerEvents;
+import eu.chargetime.ocpp.UnsupportedFeatureException;
 import eu.chargetime.ocpp.feature.profile.ClientFirmwareManagementProfile;
+import eu.chargetime.ocpp.feature.profile.Profile;
 import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;
 import eu.chargetime.ocpp.model.Request;
 import eu.chargetime.ocpp.model.SessionInformation;
@@ -12,14 +19,8 @@ import eu.chargetime.ocpp.model.core.ClearCacheRequest;
 import eu.chargetime.ocpp.model.core.GetConfigurationRequest;
 import eu.chargetime.ocpp.model.core.ResetRequest;
 import eu.chargetime.ocpp.model.core.ResetType;
-import eu.chargetime.ocpp.model.firmware.DiagnosticsStatusNotificationConfirmation;
-import eu.chargetime.ocpp.model.firmware.DiagnosticsStatusNotificationRequest;
-import eu.chargetime.ocpp.model.firmware.FirmwareStatusNotificationConfirmation;
-import eu.chargetime.ocpp.model.firmware.FirmwareStatusNotificationRequest;
-import eu.chargetime.ocpp.model.firmware.GetDiagnosticsConfirmation;
 import eu.chargetime.ocpp.model.firmware.GetDiagnosticsRequest;
-import eu.chargetime.ocpp.model.firmware.UpdateFirmwareConfirmation;
-import eu.chargetime.ocpp.model.firmware.UpdateFirmwareRequest;
+import eu.chargetime.ocpp.server.handler.FirmwareManagementEventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /*
  ChargeTime.eu - Java-OCA-OCPP
@@ -58,13 +58,49 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
  */
 public class OcppServerService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OcppServerService.class);
-    private static JSONServer server;
-    private static ServerCoreProfile core;
-    private static Map<UUID, SessionInformation> sessionList = new HashMap<>();
-    private static final ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(1);
-    private static JSONCommunicator jsonCommunicator = new JSONCommunicator(null);
 
-    public static void send(Request request) {
+    private ServerCoreProfile core = new ServerCoreProfile(new CoreEventHandler());
+    private Map<UUID, SessionInformation> sessionList = new HashMap<>();
+    private Profile firmwareProfile = new ClientFirmwareManagementProfile(new FirmwareManagementEventHandler());
+    private SessionsListener sessionsListener = new StubSessionListener();
+
+    private JSONServer server;
+    public void start() {
+        LOGGER.info("Starting up OCPP Server");
+        if (server != null) {
+            LOGGER.warn("Server already created, no actions will be performed");
+            return;
+        }
+        server = new JSONServer(core);
+        server.addFeatureProfile(firmwareProfile);
+        server.open("localhost", 8887, new ServerEvents() {
+            @Override
+            public void newSession(UUID sessionIndex, SessionInformation information) {
+                // sessionIndex is used to send messages.
+                LOGGER.debug("New session " + sessionIndex + ": " + information.getIdentifier());
+                sessionList.put(sessionIndex, information);
+                sessionsListener.onSessionsCountChange(sessionList);
+            }
+
+            @Override
+            public void lostSession(UUID sessionIndex) {
+                LOGGER.debug("Session " + sessionIndex + " lost connection");
+                sessionList.remove(sessionIndex);
+                sessionsListener.onSessionsCountChange(sessionList);
+            }
+        });
+    }
+
+    public void stop() {
+        server.close();
+        server = null;
+    }
+
+    public boolean isRunning() {
+        return server != null && !server.isClosed();
+    }
+
+    public void send(Request request) {
         for (Map.Entry<UUID, SessionInformation> entry : sessionList.entrySet()) {
             try {
                 server.send(entry.getKey(), request);
@@ -78,62 +114,10 @@ public class OcppServerService {
         }
     }
 
-    public static void sendToAll(Request request) throws NotConnectedException, OccurenceConstraintException, UnsupportedFeatureException {
+    public void sendToAll(Request request) throws NotConnectedException, OccurenceConstraintException, UnsupportedFeatureException {
         for (Map.Entry<UUID, SessionInformation> entry : sessionList.entrySet()) {
             server.send(entry.getKey(), request);
         }
-    }
-
-    public static void start() {
-        if (server != null) {
-            return;
-        }
-        // The core profile is mandatory
-        core = new ServerCoreProfile(new OcppEventHandler());
-        server = new JSONServer(core);
-
-        ClientFirmwareManagementEventHandler client = new ClientFirmwareManagementEventHandler() {
-            @Override
-            public GetDiagnosticsConfirmation handleGetDiagnosticsRequest(GetDiagnosticsRequest request) {
-                LOGGER.debug(request.getClass().getSimpleName() + " - " + jsonCommunicator.packPayload(request));
-                return null;
-            }
-
-            @Override
-            public DiagnosticsStatusNotificationConfirmation handleDiagnosticsStatusNotificationRequest(DiagnosticsStatusNotificationRequest request) {
-                LOGGER.debug(request.getClass().getSimpleName() + " - " + jsonCommunicator.packPayload(request));
-                return new DiagnosticsStatusNotificationConfirmation();
-            }
-
-            @Override
-            public FirmwareStatusNotificationConfirmation handleFirmwareStatusNotificationRequest(FirmwareStatusNotificationRequest request) {
-                LOGGER.debug(request.getClass().getSimpleName() + " - " + jsonCommunicator.packPayload(request));
-                return null;
-            }
-
-            @Override
-            public UpdateFirmwareConfirmation handleUpdateFirmwareRequest(UpdateFirmwareRequest request) {
-                LOGGER.debug(request.getClass().getSimpleName() + " - " + jsonCommunicator.packPayload(request));
-                return null;
-            }
-        };
-
-        server.addFeatureProfile(new ClientFirmwareManagementProfile(client));
-        server.open("localhost", 8887, new ServerEvents() {
-            @Override
-            public void newSession(UUID sessionIndex, SessionInformation information) {
-
-                // sessionIndex is used to send messages.
-                LOGGER.debug("New session " + sessionIndex + ": " + information.getIdentifier());
-                sessionList.put(sessionIndex, information);
-            }
-
-            @Override
-            public void lostSession(UUID sessionIndex) {
-                LOGGER.debug("Session " + sessionIndex + " lost connection");
-                sessionList.remove(sessionIndex);
-            }
-        });
     }
 
     public void sendClearCacheRequest() throws Exception {
@@ -147,7 +131,7 @@ public class OcppServerService {
         server.send(sessionIndex, request).whenComplete((confirmation, throwable) -> LOGGER.debug(confirmation.toString()));
     }
 
-    public static void sendResetRequest(Integer delay) {
+    public void sendResetRequest(Integer delay) {
         new java.util.Timer().schedule(
                 new java.util.TimerTask() {
                     @Override
@@ -161,7 +145,7 @@ public class OcppServerService {
         );
     }
 
-    public static void sendGetDiagnostics(Integer delay) {
+    public void sendGetDiagnostics(Integer delay) {
         new java.util.Timer().schedule(
                 new java.util.TimerTask() {
                     @Override
@@ -181,7 +165,7 @@ public class OcppServerService {
     }
 
 
-    public static void sendChangeAvailability(Integer delay, AvailabilityType availabilityType) {
+    public void sendChangeAvailability(Integer delay, AvailabilityType availabilityType) {
         new java.util.Timer().schedule(
                 new java.util.TimerTask() {
                     @Override
@@ -200,7 +184,7 @@ public class OcppServerService {
         );
     }
 
-    public static void sendConfig(Integer delay) {
+    public void sendConfig(Integer delay) {
         new java.util.Timer().schedule(
                 new java.util.TimerTask() {
                     @Override
@@ -227,7 +211,7 @@ public class OcppServerService {
         );
     }
 
-    public static void sendGetConfig(Integer delay) {
+    public void sendGetConfig(Integer delay) {
         new java.util.Timer().schedule(
                 new java.util.TimerTask() {
                     @Override
@@ -262,16 +246,11 @@ public class OcppServerService {
         );
     }
 
-    public static void stop() {
-        server.close();
-        server = null;
-        core = null;
-        sessionList = new HashMap<>();
-        jsonCommunicator = new JSONCommunicator(null);
+    public Map<UUID, SessionInformation> getSessionList() {
+        return sessionList;
     }
 
-    public static boolean isRunning() {
-        return server != null && !server.isClosed();
+    public void setSessionsListener(SessionsListener sessionsListener) {
+        this.sessionsListener = sessionsListener;
     }
-
 }

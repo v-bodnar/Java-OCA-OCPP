@@ -1,7 +1,10 @@
 package eu.chargetime.ocpp.gui;
 
-import eu.chargetime.ocpp.OcppServerService;
+import eu.chargetime.ocpp.server.OcppServerService;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -20,6 +23,8 @@ import java.util.concurrent.CompletableFuture;
 public class GeneralTab {
     private Label serverState = new Label("Stopped");
     private Button serverButton = new Button("Start");
+    private OcppServerService ocppServerService = ApplicationContext.INSTANCE.getOcppServerService();
+    private double textAreaHeight = 595;
 
     public Tab constructTab(){
         Tab tab = new Tab();
@@ -28,7 +33,12 @@ public class GeneralTab {
 
         TextArea textArea = new TextArea();
         textArea.setPrefWidth(995);
-        textArea.setPrefHeight(595);
+        textArea.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
+            if (textAreaHeight != newValue.getHeight()) {
+                textAreaHeight = newValue.getHeight();
+                textArea.setPrefHeight(textArea.getLayoutBounds().getHeight() + 20); // +20 is for paddings
+            }
+        });
 
         Button clearButton = new Button("Clear");
         clearButton.setOnAction(event -> textArea.clear());
@@ -54,13 +64,13 @@ public class GeneralTab {
     }
 
     private void checkAndSetServerStateColor() {
-        if (OcppServerService.isRunning()) {
+        if (ocppServerService.isRunning()) {
             serverState.setStyle("-fx-text-fill: #0aa000;");
             serverState.setText("Started");
             serverButton.setText("Stop");
             serverButton.setDisable(false);
             serverButton.setOnAction(event -> {
-                CompletableFuture.runAsync(OcppServerService::stop);
+                CompletableFuture.runAsync(ocppServerService::stop);
                 serverState.setText("Stopping...");
                 serverButton.setDisable(true);
             });
@@ -70,7 +80,7 @@ public class GeneralTab {
             serverButton.setText("Start");
             serverButton.setDisable(false);
             serverButton.setOnAction(event -> {
-                CompletableFuture.runAsync(OcppServerService::start);
+                CompletableFuture.runAsync(ocppServerService::start);
                 serverState.setText("Starting...");
                 serverButton.setDisable(true);
             });
