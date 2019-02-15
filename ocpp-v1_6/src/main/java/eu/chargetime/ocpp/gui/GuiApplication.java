@@ -1,6 +1,5 @@
 package eu.chargetime.ocpp.gui;
 
-import eu.chargetime.ocpp.rest.WebServer;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -9,11 +8,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class GuiApplication extends Application {
-
-    public static void main(String... args) throws Exception {
-        ApplicationContext.INSTANCE.getWebServer().startServer();
-        ApplicationContext.INSTANCE.getOcppServerService().start();
-    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
