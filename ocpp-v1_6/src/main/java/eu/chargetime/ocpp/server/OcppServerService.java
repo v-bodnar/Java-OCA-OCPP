@@ -3,7 +3,6 @@ package eu.chargetime.ocpp.server;
 import eu.chargetime.ocpp.JSONServer;
 import eu.chargetime.ocpp.NotConnectedException;
 import eu.chargetime.ocpp.OccurenceConstraintException;
-import eu.chargetime.ocpp.server.handler.CoreEventHandler;
 import eu.chargetime.ocpp.PropertyConstraintException;
 import eu.chargetime.ocpp.ServerEvents;
 import eu.chargetime.ocpp.UnsupportedFeatureException;
@@ -20,6 +19,7 @@ import eu.chargetime.ocpp.model.core.GetConfigurationRequest;
 import eu.chargetime.ocpp.model.core.ResetRequest;
 import eu.chargetime.ocpp.model.core.ResetType;
 import eu.chargetime.ocpp.model.firmware.GetDiagnosticsRequest;
+import eu.chargetime.ocpp.server.handler.CoreEventHandler;
 import eu.chargetime.ocpp.server.handler.FirmwareManagementEventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,10 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+
+import static eu.chargetime.ocpp.gui.StubRequestsFactory.toJson;
 
 /*
  ChargeTime.eu - Java-OCA-OCPP
@@ -65,6 +68,7 @@ public class OcppServerService {
     private SessionsListener sessionsListener = new StubSessionListener();
 
     private JSONServer server;
+
     public void start() {
         LOGGER.info("Starting up OCPP Server");
         if (server != null) {
@@ -103,6 +107,7 @@ public class OcppServerService {
     public void send(Request request) {
         for (Map.Entry<UUID, SessionInformation> entry : sessionList.entrySet()) {
             try {
+                LOGGER.debug("Sending message: {}", request);
                 server.send(entry.getKey(), request);
             } catch (OccurenceConstraintException e) {
                 e.printStackTrace();
@@ -112,6 +117,34 @@ public class OcppServerService {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void send(Request request, String sessionToken) {
+        String identifier = sessionToken.split(" ")[0];
+        String address = sessionToken.split(" ")[1]
+                .replace("(", "").replace(")", "");
+
+        Optional<UUID> sessionUUID = sessionList.entrySet().stream()
+                .filter(entry -> entry.getValue().getIdentifier().equals(identifier)
+                        && entry.getValue().getAddress().toString().equals(address))
+                .map(uuidSessionInformationEntry -> uuidSessionInformationEntry.getKey())
+                .findAny();
+        if (!sessionUUID.isPresent()) {
+            LOGGER.error("Could not find client by session token: {}", sessionToken);
+            return;
+        }
+
+        try {
+            LOGGER.debug("Sending message: {} to {}", toJson(request), sessionToken);
+            server.send(sessionUUID.get(), request);
+        } catch (OccurenceConstraintException e) {
+            e.printStackTrace();
+        } catch (UnsupportedFeatureException e) {
+            e.printStackTrace();
+        } catch (NotConnectedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void sendToAll(Request request) throws NotConnectedException, OccurenceConstraintException, UnsupportedFeatureException {

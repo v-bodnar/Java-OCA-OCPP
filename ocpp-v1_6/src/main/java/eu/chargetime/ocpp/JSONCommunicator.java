@@ -107,7 +107,7 @@ public class JSONCommunicator extends Communicator {
             try {
                 String dateString = json.getAsJsonPrimitive().getAsString();
 
-                hasLongDateFormat = dateString.length() == DATE_FORMAT_WITH_MS_LENGTH;
+                hasLongDateFormat = dateString.length() >= DATE_FORMAT_WITH_MS_LENGTH;
                 SimpleDateFormat formatter = new SimpleDateFormat(hasLongDateFormat ? DATE_FORMAT_WITH_MS : DATE_FORMAT);
 
                 formatter.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));

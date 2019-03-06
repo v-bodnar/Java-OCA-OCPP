@@ -6,7 +6,7 @@ import eu.chargetime.ocpp.server.OcppServerService;
 public class ApplicationContext {
     public static final ApplicationContext INSTANCE = new ApplicationContext();
     private OcppServerService ocppServerService = new OcppServerService();
-    private WebServer webServer = new WebServer(8080);
+    private WebServer webServer = new WebServer(9090);
 
     public OcppServerService getOcppServerService() {
         return ocppServerService;
