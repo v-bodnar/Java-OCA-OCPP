@@ -7,6 +7,8 @@ import eu.chargetime.ocpp.PropertyConstraintException;
 import eu.chargetime.ocpp.ServerEvents;
 import eu.chargetime.ocpp.UnsupportedFeatureException;
 import eu.chargetime.ocpp.feature.profile.ClientFirmwareManagementProfile;
+import eu.chargetime.ocpp.feature.profile.ClientRemoteTriggerHandler;
+import eu.chargetime.ocpp.feature.profile.ClientRemoteTriggerProfile;
 import eu.chargetime.ocpp.feature.profile.Profile;
 import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;
 import eu.chargetime.ocpp.model.Request;
@@ -19,8 +21,11 @@ import eu.chargetime.ocpp.model.core.GetConfigurationRequest;
 import eu.chargetime.ocpp.model.core.ResetRequest;
 import eu.chargetime.ocpp.model.core.ResetType;
 import eu.chargetime.ocpp.model.firmware.GetDiagnosticsRequest;
+import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageConfirmation;
+import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
 import eu.chargetime.ocpp.server.handler.CoreEventHandler;
 import eu.chargetime.ocpp.server.handler.FirmwareManagementEventHandler;
+import eu.chargetime.ocpp.server.handler.RemoteTriggerEventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +70,7 @@ public class OcppServerService {
     private ServerCoreProfile core = new ServerCoreProfile(new CoreEventHandler());
     private Map<UUID, SessionInformation> sessionList = new HashMap<>();
     private Profile firmwareProfile = new ClientFirmwareManagementProfile(new FirmwareManagementEventHandler());
+    private Profile remoteTriggerProfile = new ClientRemoteTriggerProfile(new RemoteTriggerEventHandler());
     private SessionsListener sessionsListener = new StubSessionListener();
 
     private JSONServer server;
@@ -77,6 +83,7 @@ public class OcppServerService {
         }
         server = new JSONServer(core);
         server.addFeatureProfile(firmwareProfile);
+        server.addFeatureProfile(remoteTriggerProfile);
         server.open("localhost", 8887, new ServerEvents() {
             @Override
             public void newSession(UUID sessionIndex, SessionInformation information) {

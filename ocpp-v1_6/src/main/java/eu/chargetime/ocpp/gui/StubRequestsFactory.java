@@ -30,6 +30,8 @@ import eu.chargetime.ocpp.model.firmware.GetDiagnosticsRequest;
 import eu.chargetime.ocpp.model.firmware.UpdateFirmwareRequest;
 import eu.chargetime.ocpp.model.localauthlist.GetLocalListVersionRequest;
 import eu.chargetime.ocpp.model.localauthlist.SendLocalListRequest;
+import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
+import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +88,9 @@ public class StubRequestsFactory {
                 return getGetLocalListVersionRequest();
             } else if (requestClass.equals(SendLocalListRequest.class)) {
                 return getSendLocalListRequest();
-            } else {
+            } else if(requestClass.equals(TriggerMessageRequest.class)){
+                return getTriggerMessageRequest();
+            }else {
                 return NOT_SUPPORTED;
             }
         } catch (PropertyConstraintException | JsonProcessingException e) {
@@ -213,6 +217,13 @@ public class StubRequestsFactory {
     private static String getSendLocalListRequest() throws PropertyConstraintException, JsonProcessingException {
         SendLocalListRequest sendLocalListRequest = new SendLocalListRequest();
         return objectMapper.writeValueAsString(sendLocalListRequest);
+    }
+
+    private static String getTriggerMessageRequest() throws PropertyConstraintException, JsonProcessingException {
+        TriggerMessageRequest triggerMessageRequest = new TriggerMessageRequest();
+        triggerMessageRequest.setConnectorId(1);
+        triggerMessageRequest.setRequestedMessage(TriggerMessageRequestType.Heartbeat);
+        return objectMapper.writeValueAsString(triggerMessageRequest);
     }
 
     public static <T extends Request> Optional<T> toRequest(String request, Class<T> requestClass){

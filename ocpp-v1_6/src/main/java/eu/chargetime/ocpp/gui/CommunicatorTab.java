@@ -18,6 +18,7 @@ import eu.chargetime.ocpp.model.firmware.GetDiagnosticsRequest;
 import eu.chargetime.ocpp.model.firmware.UpdateFirmwareRequest;
 import eu.chargetime.ocpp.model.localauthlist.GetLocalListVersionRequest;
 import eu.chargetime.ocpp.model.localauthlist.SendLocalListRequest;
+import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
 import eu.chargetime.ocpp.server.OcppServerService;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -161,6 +162,9 @@ public class CommunicatorTab {
         //LocalAuthList profile messages
         messages.add(GetLocalListVersionRequest.class);
         messages.add(SendLocalListRequest.class);
+
+        //Remote trigger profile messages
+        messages.add(TriggerMessageRequest.class);
 
         return messages;
     }
