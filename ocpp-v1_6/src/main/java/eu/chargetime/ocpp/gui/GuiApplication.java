@@ -12,7 +12,6 @@ public class GuiApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         createMainScene(primaryStage);
-        ApplicationContext.INSTANCE.getWebServer().startServer();
     }
 
     public void createMainScene(Stage primaryStage) {

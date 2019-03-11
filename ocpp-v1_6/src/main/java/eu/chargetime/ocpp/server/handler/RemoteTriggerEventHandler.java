@@ -17,4 +17,6 @@ public class RemoteTriggerEventHandler implements ClientRemoteTriggerHandler {
         LOGGER.debug("{} - {}", request.getClass().getSimpleName(), jsonCommunicator.packPayload(request));
         return null;
     }
+
+
 }

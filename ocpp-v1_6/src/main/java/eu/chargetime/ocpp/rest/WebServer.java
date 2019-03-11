@@ -21,7 +21,7 @@ public class WebServer {
     }
 
     public void startServer() throws Exception {
-        logger.info("Starting Budget Rest API server");
+        logger.info("Starting REST API server");
 
         System.setProperty("org.eclipse.jetty.util.log.class",
                 "org.eclipse.jetty.util.log.JavaUtilLog");
@@ -48,8 +48,12 @@ public class WebServer {
         restApiServer.start();
     }
 
+    public boolean isRunning(){
+        return restApiServer.isRunning();
+    }
+
     public void shutDown() {
-        logger.info("Shutting down Budget Rest API server");
+        logger.info("Shutting down REST API server");
         if (restApiServer != null) {
             try {
                 restApiServer.stop();

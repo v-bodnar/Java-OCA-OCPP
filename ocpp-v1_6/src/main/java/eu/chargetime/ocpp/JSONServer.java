@@ -142,8 +142,6 @@ public class JSONServer implements IServerAPI {
 
     @Override
     public void open(String host, int port, ServerEvents serverEvents) {
-        logger.info("Feature repository: {}", featureRepository);
-
         server.open(host, port, serverEvents);
     }
 

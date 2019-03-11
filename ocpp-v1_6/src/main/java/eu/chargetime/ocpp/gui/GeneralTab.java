@@ -2,9 +2,6 @@ package eu.chargetime.ocpp.gui;
 
 import eu.chargetime.ocpp.server.OcppServerService;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -14,6 +11,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
 import java.util.Timer;
@@ -21,12 +20,14 @@ import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 
 public class GeneralTab {
+    private static final Logger logger = LoggerFactory.getLogger(GeneralTab.class);
+
     private Label serverState = new Label("Stopped");
     private Button serverButton = new Button("Start");
     private OcppServerService ocppServerService = ApplicationContext.INSTANCE.getOcppServerService();
     private double textAreaHeight = 595;
 
-    public Tab constructTab(){
+    public Tab constructTab() {
         Tab tab = new Tab();
         tab.setText("General");
         tab.setClosable(false);
@@ -64,13 +65,14 @@ public class GeneralTab {
     }
 
     private void checkAndSetServerStateColor() {
-        if (ocppServerService.isRunning()) {
+        if (ocppServerService.isRunning() && ApplicationContext.INSTANCE.getWebServer().isRunning()) {
             serverState.setStyle("-fx-text-fill: #0aa000;");
             serverState.setText("Started");
             serverButton.setText("Stop");
             serverButton.setDisable(false);
             serverButton.setOnAction(event -> {
                 CompletableFuture.runAsync(ocppServerService::stop);
+                CompletableFuture.runAsync(() -> ApplicationContext.INSTANCE.getWebServer().shutDown());
                 serverState.setText("Stopping...");
                 serverButton.setDisable(true);
             });
@@ -81,6 +83,13 @@ public class GeneralTab {
             serverButton.setDisable(false);
             serverButton.setOnAction(event -> {
                 CompletableFuture.runAsync(ocppServerService::start);
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        ApplicationContext.INSTANCE.getWebServer().startServer();
+                    } catch (Exception e) {
+                        logger.error("Can't start REST server", e);
+                    }
+                });
                 serverState.setText("Starting...");
                 serverButton.setDisable(true);
             });

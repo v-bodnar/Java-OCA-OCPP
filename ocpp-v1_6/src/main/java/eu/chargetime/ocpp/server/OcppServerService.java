@@ -76,7 +76,7 @@ public class OcppServerService {
     private JSONServer server;
 
     public void start() {
-        LOGGER.info("Starting up OCPP Server");
+        LOGGER.info("Starting OCPP Server");
         if (server != null) {
             LOGGER.warn("Server already created, no actions will be performed");
             return;
