@@ -2,12 +2,15 @@ package eu.chargetime.ocpp.gui;
 
 import eu.chargetime.ocpp.server.OcppServerService;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -15,17 +18,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 
 public class GeneralTab {
     private static final Logger logger = LoggerFactory.getLogger(GeneralTab.class);
+    private final static int DEFAULT_OCPP_PORT = 8887;
 
     private Label serverState = new Label("Stopped");
+    private ComboBox<String> ipCombobox = new ComboBox<>();
+    private TextField portTextField = new TextField();
     private Button serverButton = new Button("Start");
     private OcppServerService ocppServerService = ApplicationContext.INSTANCE.getOcppServerService();
     private double textAreaHeight = 595;
+
 
     public Tab constructTab() {
         Tab tab = new Tab();
@@ -49,7 +62,16 @@ public class GeneralTab {
         hBox.setPadding(new Insets(5));
         hBox.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(serverState, Priority.ALWAYS);
-        hBox.getChildren().addAll(serverState, serverButton, clearButton);
+        ipCombobox.setItems(FXCollections.observableArrayList(getIpAddresses()));
+        ipCombobox.setValue("127.0.0.1");
+        portTextField.setText("8887");
+        portTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                logger.error("Input from port field has to be integer, using default port: {}", DEFAULT_OCPP_PORT);
+                portTextField.setText("" + DEFAULT_OCPP_PORT);
+            }
+        });
+        hBox.getChildren().addAll(serverState, ipCombobox, portTextField, serverButton, clearButton);
 
         ConsoleStream console = new ConsoleStream(textArea);
         PrintStream ps = new PrintStream(console, true);
@@ -82,7 +104,7 @@ public class GeneralTab {
             serverButton.setText("Start");
             serverButton.setDisable(false);
             serverButton.setOnAction(event -> {
-                CompletableFuture.runAsync(ocppServerService::start);
+                CompletableFuture.runAsync(() -> ocppServerService.start(ipCombobox.getValue(), portTextField.getText()));
                 CompletableFuture.runAsync(() -> {
                     try {
                         ApplicationContext.INSTANCE.getWebServer().startServer();
@@ -106,5 +128,24 @@ public class GeneralTab {
                 });
             }
         }, 0, 3000);
+    }
+
+    private Set<String> getIpAddresses() {
+        Set<String> availableIpAddresses = new HashSet<>();
+        Enumeration e = null;
+        try {
+            e = NetworkInterface.getNetworkInterfaces();
+        } catch (SocketException e1) {
+            logger.error("Could not retrieve ip addresses from network interfaces", e1);
+        }
+        while (e.hasMoreElements()) {
+            NetworkInterface n = (NetworkInterface) e.nextElement();
+            Enumeration ee = n.getInetAddresses();
+            while (ee.hasMoreElements()) {
+                InetAddress i = (InetAddress) ee.nextElement();
+                availableIpAddresses.add(i.getHostAddress());
+            }
+        }
+        return availableIpAddresses;
     }
 }

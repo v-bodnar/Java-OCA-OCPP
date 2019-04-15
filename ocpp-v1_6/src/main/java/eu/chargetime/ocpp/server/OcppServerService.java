@@ -7,7 +7,6 @@ import eu.chargetime.ocpp.PropertyConstraintException;
 import eu.chargetime.ocpp.ServerEvents;
 import eu.chargetime.ocpp.UnsupportedFeatureException;
 import eu.chargetime.ocpp.feature.profile.ClientFirmwareManagementProfile;
-import eu.chargetime.ocpp.feature.profile.ClientRemoteTriggerHandler;
 import eu.chargetime.ocpp.feature.profile.ClientRemoteTriggerProfile;
 import eu.chargetime.ocpp.feature.profile.Profile;
 import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;
@@ -21,15 +20,17 @@ import eu.chargetime.ocpp.model.core.GetConfigurationRequest;
 import eu.chargetime.ocpp.model.core.ResetRequest;
 import eu.chargetime.ocpp.model.core.ResetType;
 import eu.chargetime.ocpp.model.firmware.GetDiagnosticsRequest;
-import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageConfirmation;
-import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
 import eu.chargetime.ocpp.server.handler.CoreEventHandler;
 import eu.chargetime.ocpp.server.handler.FirmwareManagementEventHandler;
 import eu.chargetime.ocpp.server.handler.RemoteTriggerEventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,7 +76,7 @@ public class OcppServerService {
 
     private JSONServer server;
 
-    public void start() {
+    public void start(String ip, String port) {
         LOGGER.info("Starting OCPP Server");
         if (server != null) {
             LOGGER.warn("Server already created, no actions will be performed");
@@ -84,7 +85,9 @@ public class OcppServerService {
         server = new JSONServer(core);
         server.addFeatureProfile(firmwareProfile);
         server.addFeatureProfile(remoteTriggerProfile);
-        server.open("localhost", 8887, new ServerEvents() {
+
+        LOGGER.debug("Ocpp server ip: {}, port: {}", ip, port);
+        server.open(ip, Integer.parseInt(port), new ServerEvents() {
             @Override
             public void newSession(UUID sessionIndex, SessionInformation information) {
                 // sessionIndex is used to send messages.
