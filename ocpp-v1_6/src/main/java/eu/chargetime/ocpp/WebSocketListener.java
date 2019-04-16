@@ -103,9 +103,10 @@ public class WebSocketListener implements Listener {
             @Override
             public void onClose(WebSocket webSocket, int code, String reason, boolean remote) {
                 logger.debug("On connection close (resource descriptor: {}, code: {}, reason: {}, remote: {})", webSocket.getResourceDescriptor(), code, reason, remote);
-
-                sockets.get(webSocket).disconnect();
-                sockets.remove(webSocket);
+                if(sockets.containsKey(webSocket)) {
+                    sockets.get(webSocket).disconnect();
+                    sockets.remove(webSocket);
+                }
             }
 
             @Override

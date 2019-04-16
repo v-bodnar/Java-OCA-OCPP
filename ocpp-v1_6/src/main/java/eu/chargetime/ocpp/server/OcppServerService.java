@@ -26,11 +26,7 @@ import eu.chargetime.ocpp.server.handler.RemoteTriggerEventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.util.Calendar;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -107,6 +103,8 @@ public class OcppServerService {
 
     public void stop() {
         server.close();
+        sessionList.clear();
+        sessionsListener.onSessionsCountChange(sessionList);
         server = null;
     }
 
