@@ -103,7 +103,7 @@ public class ClientFirmwareManagementProfileTest extends ProfileTest {
         profile.handleRequest(SESSION_NULL, request);
 
         // Then
-        verify(handler, times(1)).handleGetDiagnosticsRequest(eq(request));
+        verify(handler, times(1)).handleGetDiagnosticsRequest(SESSION_NULL, eq(request));
     }
 
 
@@ -116,7 +116,7 @@ public class ClientFirmwareManagementProfileTest extends ProfileTest {
         profile.handleRequest(SESSION_NULL, request);
 
         // Then
-        verify(handler, times(1)).handleDiagnosticsStatusNotificationRequest(eq(request));
+        verify(handler, times(1)).handleDiagnosticsStatusNotificationRequest(SESSION_NULL, eq(request));
     }
 
     @Test
@@ -128,7 +128,7 @@ public class ClientFirmwareManagementProfileTest extends ProfileTest {
         profile.handleRequest(SESSION_NULL, request);
 
         // Then
-        verify(handler, times(1)).handleFirmwareStatusNotificationRequest(eq(request));
+        verify(handler, times(1)).handleFirmwareStatusNotificationRequest(SESSION_NULL, eq(request));
     }
 
     @Test
@@ -140,7 +140,7 @@ public class ClientFirmwareManagementProfileTest extends ProfileTest {
         profile.handleRequest(SESSION_NULL, request);
 
         // Then
-        verify(handler, times(1)).handleUpdateFirmwareRequest(eq(request));
+        verify(handler, times(1)).handleUpdateFirmwareRequest(SESSION_NULL, eq(request));
     }
 
 }

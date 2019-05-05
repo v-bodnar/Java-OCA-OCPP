@@ -18,6 +18,7 @@ import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
+import java.util.UUID;
 
 /*
  ChargeTime.eu - Java-OCA-OCPP
@@ -140,7 +141,8 @@ public class FakeChargePoint
 
         remoteTrigger = new ClientRemoteTriggerProfile(new ClientRemoteTriggerHandler() {
             @Override
-            public TriggerMessageConfirmation handleTriggerMessageRequest(TriggerMessageRequest request) {
+            public TriggerMessageConfirmation handleTriggerMessageRequest(UUID sessionUuid,
+                                                                          TriggerMessageRequest request) {
                 receivedRequest = request;
                 return new TriggerMessageConfirmation(TriggerMessageStatus.Accepted);
             }
@@ -148,25 +150,28 @@ public class FakeChargePoint
 
         firmware = new ClientFirmwareManagementProfile(new ClientFirmwareManagementEventHandler() {
             @Override
-            public GetDiagnosticsConfirmation handleGetDiagnosticsRequest(GetDiagnosticsRequest request) {
+            public GetDiagnosticsConfirmation handleGetDiagnosticsRequest(UUID sessionUuid,
+                                                                          GetDiagnosticsRequest request) {
                 receivedRequest = request;
                 return new GetDiagnosticsConfirmation();
             }
 
             @Override
-            public DiagnosticsStatusNotificationConfirmation handleDiagnosticsStatusNotificationRequest(DiagnosticsStatusNotificationRequest request) {
+            public DiagnosticsStatusNotificationConfirmation handleDiagnosticsStatusNotificationRequest(UUID sessionUuid, DiagnosticsStatusNotificationRequest request) {
                 receivedRequest = request;
                 return new DiagnosticsStatusNotificationConfirmation();
             }
 
             @Override
-            public FirmwareStatusNotificationConfirmation handleFirmwareStatusNotificationRequest(FirmwareStatusNotificationRequest request) {
+            public FirmwareStatusNotificationConfirmation handleFirmwareStatusNotificationRequest(UUID sessionUuid,
+                                                                                                  FirmwareStatusNotificationRequest request) {
                 receivedRequest = request;
                 return new FirmwareStatusNotificationConfirmation();
             }
 
             @Override
-            public UpdateFirmwareConfirmation handleUpdateFirmwareRequest(UpdateFirmwareRequest request) {
+            public UpdateFirmwareConfirmation handleUpdateFirmwareRequest(UUID sessionUuid,
+                                                                          UpdateFirmwareRequest request) {
                 receivedRequest = request;
                 return new UpdateFirmwareConfirmation();
             }

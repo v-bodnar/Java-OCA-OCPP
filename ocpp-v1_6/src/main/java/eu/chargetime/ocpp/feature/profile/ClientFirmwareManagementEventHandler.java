@@ -27,13 +27,14 @@ package eu.chargetime.ocpp.feature.profile;
 
 import eu.chargetime.ocpp.model.firmware.*;
 
+import java.util.UUID;
+
 public interface ClientFirmwareManagementEventHandler {
-    GetDiagnosticsConfirmation handleGetDiagnosticsRequest(GetDiagnosticsRequest request);
+    GetDiagnosticsConfirmation handleGetDiagnosticsRequest(UUID sessionIndex, GetDiagnosticsRequest request);
 
-    DiagnosticsStatusNotificationConfirmation handleDiagnosticsStatusNotificationRequest(DiagnosticsStatusNotificationRequest request);
+    DiagnosticsStatusNotificationConfirmation handleDiagnosticsStatusNotificationRequest(UUID sessionIndex, DiagnosticsStatusNotificationRequest request);
 
-    FirmwareStatusNotificationConfirmation handleFirmwareStatusNotificationRequest(FirmwareStatusNotificationRequest request);
+    FirmwareStatusNotificationConfirmation handleFirmwareStatusNotificationRequest(UUID sessionIndex, FirmwareStatusNotificationRequest request);
 
-    UpdateFirmwareConfirmation handleUpdateFirmwareRequest(UpdateFirmwareRequest request);
-
+    UpdateFirmwareConfirmation handleUpdateFirmwareRequest(UUID sessionIndex, UpdateFirmwareRequest request);
 }

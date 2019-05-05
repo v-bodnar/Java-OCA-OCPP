@@ -63,7 +63,6 @@ import static eu.chargetime.ocpp.gui.StubRequestsFactory.toJson;
  */
 public class OcppServerService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OcppServerService.class);
-
     private ServerCoreProfile core = new ServerCoreProfile(new CoreEventHandler());
     private Map<UUID, SessionInformation> sessionList = new HashMap<>();
     private Profile firmwareProfile = new ClientFirmwareManagementProfile(new FirmwareManagementEventHandler());
@@ -82,7 +81,7 @@ public class OcppServerService {
         server.addFeatureProfile(firmwareProfile);
         server.addFeatureProfile(remoteTriggerProfile);
 
-        LOGGER.debug("Ocpp server ip: {}, port: {}", ip, port);
+        LOGGER.info("Ocpp server ip: {}, port: {}", ip, port);
         server.open(ip, Integer.parseInt(port), new ServerEvents() {
             @Override
             public void newSession(UUID sessionIndex, SessionInformation information) {
@@ -293,5 +292,9 @@ public class OcppServerService {
 
     public void setSessionsListener(SessionsListener sessionsListener) {
         this.sessionsListener = sessionsListener;
+    }
+
+    public Optional<SessionInformation> getSessionInformation(UUID sessionUuid){
+        return Optional.ofNullable(sessionList.get(sessionUuid));
     }
 }

@@ -30,6 +30,8 @@ package eu.chargetime.ocpp.feature.profile;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageConfirmation;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
 
+import java.util.UUID;
+
 public interface ClientRemoteTriggerHandler {
     /**
      * Handle a {@link TriggerMessageRequest} and return a {@link TriggerMessageConfirmation}.
@@ -37,5 +39,5 @@ public interface ClientRemoteTriggerHandler {
      * @param request   incoming {@link TriggerMessageRequest} to handle.
      * @return outgoing {@link TriggerMessageConfirmation} to reply with.
      */
-    TriggerMessageConfirmation handleTriggerMessageRequest(TriggerMessageRequest request);
+    TriggerMessageConfirmation handleTriggerMessageRequest(UUID sessionIndex, TriggerMessageRequest request);
 }

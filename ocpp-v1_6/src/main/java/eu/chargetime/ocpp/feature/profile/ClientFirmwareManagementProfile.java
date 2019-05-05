@@ -59,13 +59,13 @@ public class ClientFirmwareManagementProfile implements Profile {
         Confirmation result = null;
 
         if (request instanceof GetDiagnosticsRequest) {
-            result = eventHandler.handleGetDiagnosticsRequest((GetDiagnosticsRequest) request);
+            result = eventHandler.handleGetDiagnosticsRequest(sessionIndex, (GetDiagnosticsRequest) request);
         } else if (request instanceof DiagnosticsStatusNotificationRequest) {
-            result = eventHandler.handleDiagnosticsStatusNotificationRequest((DiagnosticsStatusNotificationRequest) request);
+            result = eventHandler.handleDiagnosticsStatusNotificationRequest(sessionIndex, (DiagnosticsStatusNotificationRequest) request);
         } else if (request instanceof FirmwareStatusNotificationRequest) {
-            result = eventHandler.handleFirmwareStatusNotificationRequest((FirmwareStatusNotificationRequest) request);
+            result = eventHandler.handleFirmwareStatusNotificationRequest(sessionIndex, (FirmwareStatusNotificationRequest) request);
         } else if (request instanceof UpdateFirmwareRequest) {
-            result = eventHandler.handleUpdateFirmwareRequest((UpdateFirmwareRequest) request);
+            result = eventHandler.handleUpdateFirmwareRequest(sessionIndex, (UpdateFirmwareRequest) request);
         }
 
         return result;

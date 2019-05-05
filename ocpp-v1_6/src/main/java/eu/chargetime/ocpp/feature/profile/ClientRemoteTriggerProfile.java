@@ -60,7 +60,7 @@ public class ClientRemoteTriggerProfile implements Profile {
         Confirmation result = null;
 
         if (request instanceof TriggerMessageRequest) {
-            result = eventHandler.handleTriggerMessageRequest((TriggerMessageRequest) request);
+            result = eventHandler.handleTriggerMessageRequest(sessionIndex, (TriggerMessageRequest) request);
         }
 
         return  result;

@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -11,12 +12,14 @@ public class GuiApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        ApplicationContext.INSTANCE.initialize();
         createMainScene(primaryStage);
     }
 
     public void createMainScene(Stage primaryStage) {
         Group root = new Group();
         Scene scene = new Scene(root, 1000, 600);
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/ocpp-logo.png")));
 
         // bind to take available space
         BorderPane borderPane = new BorderPane();
@@ -27,17 +30,11 @@ public class GuiApplication extends Application {
         TabPane tabPane = new TabPane();
         tabPane.getTabs().add(new GeneralTab().constructTab());
         tabPane.getTabs().add(new CommunicatorTab().constructTab());
+        tabPane.getTabs().add(new ServerTab().constructTab(primaryStage));
         borderPane.setCenter(tabPane);
 
         primaryStage.setTitle("Ocpp Server");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-
-    @Override
-    public void stop() throws Exception {
-        super.stop();
-    }
-
-
 }

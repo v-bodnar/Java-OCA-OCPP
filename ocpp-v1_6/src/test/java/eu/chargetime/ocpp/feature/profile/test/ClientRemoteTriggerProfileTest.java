@@ -66,13 +66,13 @@ public class ClientRemoteTriggerProfileTest {
         profile.handleRequest(SESSION_NULL, request);
 
         // Then
-        verify(handler, times(1)).handleTriggerMessageRequest(request);
+        verify(handler, times(1)).handleTriggerMessageRequest(SESSION_NULL, request);
     }
 
     @Test
     public void handleRequest_SetTriggerMessageRequest_returnsTriggerMessageRequest() {
         // Given
-        when(handler.handleTriggerMessageRequest(any())).thenReturn(new TriggerMessageConfirmation());
+        when(handler.handleTriggerMessageRequest(any(), any())).thenReturn(new TriggerMessageConfirmation());
         TriggerMessageRequest request = new TriggerMessageRequest();
 
         // When
