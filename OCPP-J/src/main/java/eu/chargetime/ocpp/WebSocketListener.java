@@ -27,6 +27,15 @@ package eu.chargetime.ocpp;
 
 import eu.chargetime.ocpp.model.SessionInformation;
 import eu.chargetime.ocpp.wss.WssFactoryBuilder;
+import org.java_websocket.WebSocket;
+import org.java_websocket.drafts.Draft;
+import org.java_websocket.exceptions.InvalidDataException;
+import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.handshake.ServerHandshakeBuilder;
+import org.java_websocket.server.WebSocketServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
@@ -34,12 +43,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.java_websocket.WebSocket;
-import org.java_websocket.drafts.Draft;
-import org.java_websocket.handshake.ClientHandshake;
-import org.java_websocket.server.WebSocketServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class WebSocketListener implements Listener {
   private static final Logger logger = LoggerFactory.getLogger(WebSocketListener.class);
@@ -55,24 +58,37 @@ public class WebSocketListener implements Listener {
   private final Map<WebSocket, WebSocketReceiver> sockets;
   private volatile boolean closed = true;
   private boolean handleRequestAsync;
+  private HandshakeResolver handshakeResolver;
 
   public WebSocketListener(
-      ISessionFactory sessionFactory, JSONConfiguration configuration, Draft... drafts) {
+      ISessionFactory sessionFactory, JSONConfiguration configuration, HandshakeResolver handshakeResolver,
+      Draft... drafts) {
     this.sessionFactory = sessionFactory;
     this.configuration = configuration;
     this.drafts = Arrays.asList(drafts);
     this.sockets = new ConcurrentHashMap<>();
+    this.handshakeResolver = handshakeResolver;
   }
 
   public WebSocketListener(ISessionFactory sessionFactory, Draft... drafts) {
-    this(sessionFactory, JSONConfiguration.get(), drafts);
+    this(sessionFactory, JSONConfiguration.get(), null, drafts);
   }
 
   @Override
   public void open(String hostname, int port, ListenerEvents handler) {
     server =
         new WebSocketServer(new InetSocketAddress(hostname, port), drafts) {
-          @Override
+
+            @Override
+            public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
+                ServerHandshakeBuilder builder = super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
+                if(handshakeResolver != null){
+                    handshakeResolver.onHandshake(request);
+                }
+                return builder;
+            }
+
+            @Override
           public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
             logger.debug(
                 "On connection open (resource descriptor: {})",
