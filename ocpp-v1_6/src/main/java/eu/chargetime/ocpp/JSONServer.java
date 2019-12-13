@@ -31,18 +31,19 @@ import eu.chargetime.ocpp.model.Confirmation;
 import eu.chargetime.ocpp.model.Request;
 import eu.chargetime.ocpp.wss.BaseWssFactoryBuilder;
 import eu.chargetime.ocpp.wss.WssFactoryBuilder;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.UUID;
-import java.util.concurrent.CompletionStage;
-import javax.net.ssl.SSLContext;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.protocols.IProtocol;
 import org.java_websocket.protocols.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.SSLContext;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.UUID;
+import java.util.concurrent.CompletionStage;
 
 public class JSONServer implements IServerAPI {
 
@@ -60,7 +61,7 @@ public class JSONServer implements IServerAPI {
    * @param coreProfile implementation of the core feature profile.
    * @param configuration network configuration for a json server.
    */
-  public JSONServer(ServerCoreProfile coreProfile, JSONConfiguration configuration) {
+  public JSONServer(ServerCoreProfile coreProfile, JSONConfiguration configuration, HandshakeResolver handshakeResolver) {
     featureRepository = new FeatureRepository();
     SessionFactory sessionFactory = new SessionFactory(featureRepository);
 
@@ -69,7 +70,7 @@ public class JSONServer implements IServerAPI {
     protocols.add(new Protocol(""));
     draftOcppOnly = new Draft_6455(Collections.emptyList(), protocols);
 
-    this.listener = new WebSocketListener(sessionFactory, configuration, draftOcppOnly);
+    this.listener = new WebSocketListener(sessionFactory, configuration, handshakeResolver, draftOcppOnly);
     server = new Server(this.listener, featureRepository, new PromiseRepository());
     featureRepository.addFeatureProfile(coreProfile);
   }
@@ -80,7 +81,16 @@ public class JSONServer implements IServerAPI {
    * @param coreProfile implementation of the core feature profile.
    */
   public JSONServer(ServerCoreProfile coreProfile) {
-    this(coreProfile, JSONConfiguration.get());
+    this(coreProfile, JSONConfiguration.get(), request -> {});
+  }
+
+  /**
+   * The core feature profile is required as a minimum. The constructor creates WS-ready server.
+   *
+   * @param coreProfile implementation of the core feature profile.
+   */
+  public JSONServer(ServerCoreProfile coreProfile, HandshakeResolver handshakeResolver) {
+    this(coreProfile, JSONConfiguration.get(), handshakeResolver);
   }
 
   /**
@@ -94,8 +104,10 @@ public class JSONServer implements IServerAPI {
   public JSONServer(
       ServerCoreProfile coreProfile,
       WssFactoryBuilder wssFactoryBuilder,
-      JSONConfiguration configuration) {
-    this(coreProfile, configuration);
+      JSONConfiguration configuration,
+      HandshakeResolver handshakeResolver
+      ) {
+    this(coreProfile, configuration, handshakeResolver);
     enableWSS(wssFactoryBuilder);
   }
 
@@ -106,8 +118,8 @@ public class JSONServer implements IServerAPI {
    * @param wssFactoryBuilder to build {@link org.java_websocket.WebSocketServerFactory} to support
    *     wss://.
    */
-  public JSONServer(ServerCoreProfile coreProfile, WssFactoryBuilder wssFactoryBuilder) {
-    this(coreProfile, wssFactoryBuilder, JSONConfiguration.get());
+  public JSONServer(ServerCoreProfile coreProfile, WssFactoryBuilder wssFactoryBuilder, HandshakeResolver handshakeResolver) {
+    this(coreProfile, wssFactoryBuilder, JSONConfiguration.get(), handshakeResolver);
   }
 
   // To ensure the exposed API is backward compatible
