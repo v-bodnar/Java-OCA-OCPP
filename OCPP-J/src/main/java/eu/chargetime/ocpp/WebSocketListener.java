@@ -84,7 +84,8 @@ public class WebSocketListener implements Listener {
           @Override
           public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(
               WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
-            ServerHandshakeBuilder builder = super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
+            ServerHandshakeBuilder builder =
+                super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
             if (handshakeResolver != null) {
               handshakeResolver.onHandshake(request);
             }
