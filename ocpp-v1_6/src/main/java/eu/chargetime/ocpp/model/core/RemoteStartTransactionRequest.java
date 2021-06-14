@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +44,22 @@ public class RemoteStartTransactionRequest implements Request {
   private Integer connectorId;
   private String idTag;
   private ChargingProfile chargingProfile;
+
+  /**
+   * @deprecated use {@link #RemoteStartTransactionRequest(String)} to be sure to set required
+   *     fields
+   */
+  @Deprecated
+  public RemoteStartTransactionRequest() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param idTag a String with max length 20, see {@link #setIdTag(String)}
+   */
+  public RemoteStartTransactionRequest(String idTag) {
+    setIdTag(idTag);
+  }
 
   @Override
   public boolean validate() {

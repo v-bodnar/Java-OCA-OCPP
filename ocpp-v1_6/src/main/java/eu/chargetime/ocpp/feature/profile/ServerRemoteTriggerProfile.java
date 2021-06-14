@@ -13,10 +13,12 @@ import java.util.UUID;
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2017 Emil Christopher Solli Melar <emil@iconsultable.no>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2017 Emil Christopher Solli Melar
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +46,7 @@ public class ServerRemoteTriggerProfile implements Profile {
   public ServerRemoteTriggerProfile() {
 
     features = new HashSet<>();
-    features.add(new TriggerMessageFeature(this));
+    features.add(new TriggerMessageFeature(null));
   }
 
   @Override
@@ -57,13 +59,31 @@ public class ServerRemoteTriggerProfile implements Profile {
     return null;
   }
 
-  public TriggerMessageRequest createTriggerMessageRequest(TriggerMessageRequestType type) {
-    return createTriggerMessageRequest(type, null);
+  /**
+   * Create a client {@link TriggerMessageRequest} with required values.
+   *
+   * @param triggerMessageRequestType {@link TriggerMessageRequestType}
+   * @return an instance of {@link TriggerMessageRequest}
+   * @see TriggerMessageRequest
+   * @see TriggerMessageFeature
+   */
+  public TriggerMessageRequest createTriggerMessageRequest(
+      TriggerMessageRequestType triggerMessageRequestType) {
+    return createTriggerMessageRequest(triggerMessageRequestType, null);
   }
 
+  /**
+   * Create a client {@link TriggerMessageRequest} with required values.
+   *
+   * @param triggerMessageRequestType {@link TriggerMessageRequestType}
+   * @param connectorId integer. value &gt; 0
+   * @return an instance of {@link TriggerMessageRequest}
+   * @see TriggerMessageRequest
+   * @see TriggerMessageFeature
+   */
   public TriggerMessageRequest createTriggerMessageRequest(
-      TriggerMessageRequestType type, Integer connectorId) {
-    TriggerMessageRequest request = new TriggerMessageRequest(type);
+      TriggerMessageRequestType triggerMessageRequestType, Integer connectorId) {
+    TriggerMessageRequest request = new TriggerMessageRequest(triggerMessageRequestType);
     request.setConnectorId(connectorId);
     return request;
   }

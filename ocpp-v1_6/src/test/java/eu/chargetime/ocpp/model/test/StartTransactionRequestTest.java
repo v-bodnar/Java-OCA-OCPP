@@ -1,14 +1,12 @@
 package eu.chargetime.ocpp.model.test;
 
 import static eu.chargetime.ocpp.utilities.TestUtilities.aString;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 import eu.chargetime.ocpp.PropertyConstraintException;
 import eu.chargetime.ocpp.model.core.StartTransactionRequest;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,6 +18,7 @@ import org.junit.rules.ExpectedException;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -134,7 +133,7 @@ public class StartTransactionRequestTest {
   @Test
   public void setTimestamp_calendarNow_timestampIsSet() {
     // Given
-    Calendar now = Calendar.getInstance();
+    ZonedDateTime now = ZonedDateTime.now();
 
     // When
     request.setTimestamp(now);
@@ -157,7 +156,7 @@ public class StartTransactionRequestTest {
     request.setConnectorId(42);
     request.setIdTag("xxx");
     request.setMeterStart(42);
-    request.setTimestamp(Calendar.getInstance());
+    request.setTimestamp(ZonedDateTime.now());
 
     // When
     boolean isValid = request.validate();

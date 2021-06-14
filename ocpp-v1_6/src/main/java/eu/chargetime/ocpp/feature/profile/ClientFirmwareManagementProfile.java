@@ -5,6 +5,7 @@ package eu.chargetime.ocpp.feature.profile;
    MIT License
 
    Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+   Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
@@ -40,9 +41,9 @@ public class ClientFirmwareManagementProfile implements Profile {
   public ClientFirmwareManagementProfile(ClientFirmwareManagementEventHandler eventHandler) {
     this.eventHandler = eventHandler;
     features = new HashSet<>();
+    features.add(new DiagnosticsStatusNotificationFeature(null));
+    features.add(new FirmwareStatusNotificationFeature(null));
     features.add(new GetDiagnosticsFeature(this));
-    features.add(new DiagnosticsStatusNotificationFeature(this));
-    features.add(new FirmwareStatusNotificationFeature(this));
     features.add(new UpdateFirmwareFeature(this));
   }
 

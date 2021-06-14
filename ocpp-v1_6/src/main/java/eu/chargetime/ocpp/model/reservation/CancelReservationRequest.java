@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * Copyright (C) 2016 Thomas Volden <tv@chargetime.eu>
  * Copyright (C) 2018 Mikhail Kladkevich <kladmv@ecp-share.com>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,12 +37,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 /** Sent by the Central System to the Charge Point. */
 @XmlRootElement
 public class CancelReservationRequest implements Request {
+
   private Integer reservationId;
 
+  /**
+   * @deprecated use {@link #CancelReservationRequest(Integer)} to be sure to set required fields
+   */
+  @Deprecated
   public CancelReservationRequest() {}
 
+  /**
+   * Handle required fields.
+   *
+   * @param reservationId Integer, id of the reservation, see {@link #setReservationId(Integer)}
+   */
   public CancelReservationRequest(Integer reservationId) {
-    this.reservationId = reservationId;
+    setReservationId(reservationId);
   }
 
   @Override

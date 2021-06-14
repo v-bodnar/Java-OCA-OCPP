@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,10 +47,12 @@ public class DataTransferRequest implements Request {
   private String messageId;
   private String data;
 
+  /** @deprecated use {@link #DataTransferRequest(String)} to be sure to set required fields */
+  @Deprecated
   public DataTransferRequest() {}
 
   /**
-   * Set required fields.
+   * Handle required fields.
    *
    * @param vendorId Vendor identification, see {@link #setVendorId(String)}.
    */

@@ -6,6 +6,7 @@ ChargeTime.eu - Java-OCA-OCPP
 MIT License
 
 Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -51,6 +52,28 @@ public class ChangeConfigurationRequest implements Request {
 
   private String key;
   private String value;
+
+  /**
+   * @deprecated use {@link #ChangeConfigurationRequest(String, String)} to be sure to set required
+   *     fields
+   */
+  @Deprecated
+  public ChangeConfigurationRequest() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param key String, max 50 characters, case insensitive, see {@link #setKey(String)}
+   * @param value String, max 500 characters, case insensitive, see {@link #setValue(String)}
+   */
+  public ChangeConfigurationRequest(String key, String value) {
+    setKey(key);
+    setValue(value);
+  }
+
+  private static String createErrorMessage(int valueMaxLength) {
+    return String.format(ERROR_MESSAGE, valueMaxLength);
+  }
 
   /**
    * The name of the configuration setting to change.
@@ -114,10 +137,6 @@ public class ChangeConfigurationRequest implements Request {
   @Override
   public boolean transactionRelated() {
     return false;
-  }
-
-  private static String createErrorMessage(int valueMaxLength) {
-    return String.format(ERROR_MESSAGE, valueMaxLength);
   }
 
   @Override

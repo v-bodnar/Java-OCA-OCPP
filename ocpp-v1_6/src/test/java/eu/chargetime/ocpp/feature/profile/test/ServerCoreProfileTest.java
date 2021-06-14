@@ -7,43 +7,11 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import eu.chargetime.ocpp.feature.AuthorizeFeature;
-import eu.chargetime.ocpp.feature.BootNotificationFeature;
-import eu.chargetime.ocpp.feature.ChangeAvailabilityFeature;
-import eu.chargetime.ocpp.feature.ChangeConfigurationFeature;
-import eu.chargetime.ocpp.feature.ClearCacheFeature;
-import eu.chargetime.ocpp.feature.DataTransferFeature;
-import eu.chargetime.ocpp.feature.Feature;
-import eu.chargetime.ocpp.feature.GetConfigurationFeature;
-import eu.chargetime.ocpp.feature.HeartbeatFeature;
-import eu.chargetime.ocpp.feature.MeterValuesFeature;
-import eu.chargetime.ocpp.feature.RemoteStartTransactionFeature;
-import eu.chargetime.ocpp.feature.RemoteStopTransactionFeature;
-import eu.chargetime.ocpp.feature.ResetFeature;
-import eu.chargetime.ocpp.feature.StartTransactionFeature;
-import eu.chargetime.ocpp.feature.StatusNotificationFeature;
-import eu.chargetime.ocpp.feature.StopTransactionFeature;
-import eu.chargetime.ocpp.feature.UnlockConnectorFeature;
+import eu.chargetime.ocpp.feature.*;
 import eu.chargetime.ocpp.feature.profile.ServerCoreEventHandler;
 import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;
-import eu.chargetime.ocpp.model.core.AuthorizeRequest;
-import eu.chargetime.ocpp.model.core.AvailabilityType;
-import eu.chargetime.ocpp.model.core.BootNotificationRequest;
-import eu.chargetime.ocpp.model.core.ChangeAvailabilityRequest;
-import eu.chargetime.ocpp.model.core.ChangeConfigurationRequest;
-import eu.chargetime.ocpp.model.core.ClearCacheRequest;
-import eu.chargetime.ocpp.model.core.DataTransferRequest;
-import eu.chargetime.ocpp.model.core.GetConfigurationRequest;
-import eu.chargetime.ocpp.model.core.HeartbeatRequest;
-import eu.chargetime.ocpp.model.core.MeterValuesRequest;
-import eu.chargetime.ocpp.model.core.RemoteStartTransactionRequest;
-import eu.chargetime.ocpp.model.core.RemoteStopTransactionRequest;
-import eu.chargetime.ocpp.model.core.ResetRequest;
-import eu.chargetime.ocpp.model.core.ResetType;
-import eu.chargetime.ocpp.model.core.StartTransactionRequest;
-import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
-import eu.chargetime.ocpp.model.core.StopTransactionRequest;
-import eu.chargetime.ocpp.model.core.UnlockConnectorRequest;
+import eu.chargetime.ocpp.model.core.*;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,6 +25,7 @@ import org.mockito.runners.MockitoJUnitRunner;
    MIT License
 
    Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+   Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
@@ -101,7 +70,7 @@ public class ServerCoreProfileTest extends ProfileTest {
   @Test
   public void handleRequest_anAuthorizeRequest_callsHandleAuthorizeRequest() {
     // Given
-    AuthorizeRequest request = new AuthorizeRequest();
+    AuthorizeRequest request = new AuthorizeRequest("idTag");
     UUID sessionId = UUID.randomUUID();
 
     // When
@@ -124,7 +93,7 @@ public class ServerCoreProfileTest extends ProfileTest {
   @Test
   public void handleRequest_aBootNotificationRequest_callsHandleBootNotificationRequest() {
     // Given
-    BootNotificationRequest request = new BootNotificationRequest();
+    BootNotificationRequest request = new BootNotificationRequest("vendor", "model");
     UUID sessionId = UUID.randomUUID();
 
     // When
@@ -226,7 +195,7 @@ public class ServerCoreProfileTest extends ProfileTest {
   @Test
   public void handleRequest_aDataTransferRequest_callsHandleDataTransferRequest() {
     // Given
-    DataTransferRequest request = new DataTransferRequest();
+    DataTransferRequest request = new DataTransferRequest("vendor");
     UUID sessionId = UUID.randomUUID();
 
     // When
@@ -290,7 +259,7 @@ public class ServerCoreProfileTest extends ProfileTest {
   @Test
   public void handleRequest_aMeterValuesRequest_callsHandleMeterValuesRequest() {
     // Given
-    MeterValuesRequest request = new MeterValuesRequest();
+    MeterValuesRequest request = new MeterValuesRequest(0);
     UUID sessionId = UUID.randomUUID();
 
     // When
@@ -382,7 +351,8 @@ public class ServerCoreProfileTest extends ProfileTest {
   @Test
   public void handleRequest_aStartTransactionRequest_callsHandleStartTransactionRequest() {
     // Given
-    StartTransactionRequest request = new StartTransactionRequest();
+    StartTransactionRequest request =
+        new StartTransactionRequest(1, "idTag", 0, ZonedDateTime.now());
     UUID sessionId = UUID.randomUUID();
 
     // When
@@ -406,7 +376,9 @@ public class ServerCoreProfileTest extends ProfileTest {
   @Test
   public void handleRequest_aStatusNotificationRequest_callsHandleStatusNotificationRequest() {
     // Given
-    StatusNotificationRequest request = new StatusNotificationRequest();
+    StatusNotificationRequest request =
+        new StatusNotificationRequest(
+            0, ChargePointErrorCode.InternalError, ChargePointStatus.Charging);
     UUID sessionId = UUID.randomUUID();
 
     // When
@@ -429,7 +401,7 @@ public class ServerCoreProfileTest extends ProfileTest {
   @Test
   public void handleRequest_aStopTransactionRequest_callsHandleStopTransactionRequest() {
     // Given
-    StopTransactionRequest request = new StopTransactionRequest();
+    StopTransactionRequest request = new StopTransactionRequest(0, ZonedDateTime.now(), 0);
     UUID sessionId = UUID.randomUUID();
 
     // When

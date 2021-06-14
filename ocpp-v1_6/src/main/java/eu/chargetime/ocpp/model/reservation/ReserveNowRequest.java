@@ -4,7 +4,7 @@ import eu.chargetime.ocpp.PropertyConstraintException;
 import eu.chargetime.ocpp.model.Request;
 import eu.chargetime.ocpp.utilities.ModelUtil;
 import eu.chargetime.ocpp.utilities.MoreObjects;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * Copyright (C) 2016 Thomas Volden <tv@chargetime.eu>
  * Copyright (C) 2018 Mikhail Kladkevich <kladmv@ecp-share.com>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,19 +47,32 @@ public class ReserveNowRequest implements Request {
   private static final String ERROR_MESSAGE = "Exceeded limit of " + ID_TAG_MAX_LENGTH + " chars";
 
   private Integer connectorId;
-  private Calendar expiryDate;
+  private ZonedDateTime expiryDate;
   private String idTag;
   private String parentIdTag;
   private Integer reservationId;
 
+  /**
+   * @deprecated use {@link #ReserveNowRequest(Integer, ZonedDateTime, String, Integer)} to be sure
+   *     to set required fields
+   */
+  @Deprecated
   public ReserveNowRequest() {}
 
+  /**
+   * Handle required fields.
+   *
+   * @param connectorId Integer, the destination connectorId, see {@link #setConnectorId(Integer)}
+   * @param expiryDate ZonedDateTime, end of reservation, see {@link #setExpiryDate(ZonedDateTime)}
+   * @param idTag String, the identifier, see {@link #setIdTag(String)}
+   * @param reservationId Integer, id of reservation, see {@link #setReservationId(Integer)}
+   */
   public ReserveNowRequest(
-      Integer connectorId, Calendar expiryDate, String idTag, Integer reservationId) {
-    this.connectorId = connectorId;
-    this.expiryDate = expiryDate;
-    this.idTag = idTag;
-    this.reservationId = reservationId;
+      Integer connectorId, ZonedDateTime expiryDate, String idTag, Integer reservationId) {
+    setConnectorId(connectorId);
+    setExpiryDate(expiryDate);
+    setIdTag(idTag);
+    setReservationId(reservationId);
   }
 
   @Override
@@ -98,19 +112,19 @@ public class ReserveNowRequest implements Request {
   /**
    * This contains the date and time when the reservation ends.
    *
-   * @return Calendar, end of reservation.
+   * @return ZonedDateTime, end of reservation.
    */
-  public Calendar getExpiryDate() {
+  public ZonedDateTime getExpiryDate() {
     return expiryDate;
   }
 
   /**
    * Required. This contains the date and time when the reservation ends.
    *
-   * @param expiryDate Calendar, end of reservation.
+   * @param expiryDate ZonedDateTime, end of reservation.
    */
   @XmlElement
-  public void setExpiryDate(Calendar expiryDate) {
+  public void setExpiryDate(ZonedDateTime expiryDate) {
     this.expiryDate = expiryDate;
   }
 

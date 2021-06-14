@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +29,7 @@ package eu.chargetime.ocpp.model.core;
 
 import eu.chargetime.ocpp.model.Confirmation;
 import eu.chargetime.ocpp.utilities.MoreObjects;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -36,7 +37,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 /** Sent by the Central System to the Charge Point in response to a {@link HeartbeatRequest}. */
 @XmlRootElement(name = "heartbeatResponse")
 public class HeartbeatConfirmation implements Confirmation {
-  private Calendar currentTime;
+  private ZonedDateTime currentTime;
+
+  /**
+   * @deprecated use {@link #HeartbeatConfirmation(ZonedDateTime)} to be sure to set required fields
+   */
+  @Deprecated
+  public HeartbeatConfirmation() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param currentTime ZonedDateTime, current time, see {@link #setCurrentTime(ZonedDateTime)}
+   */
+  public HeartbeatConfirmation(ZonedDateTime currentTime) {
+    setCurrentTime(currentTime);
+  }
 
   /**
    * This contains the current time of the Central System.
@@ -44,7 +60,7 @@ public class HeartbeatConfirmation implements Confirmation {
    * @return The current time.
    */
   @Deprecated
-  public Calendar objCurrentTime() {
+  public ZonedDateTime objCurrentTime() {
     return currentTime;
   }
 
@@ -53,17 +69,17 @@ public class HeartbeatConfirmation implements Confirmation {
    *
    * @return The current time.
    */
-  public Calendar getCurrentTime() {
+  public ZonedDateTime getCurrentTime() {
     return currentTime;
   }
 
   /**
    * Required. This contains the current time of the Central System.
    *
-   * @param currentTime Calendar, current time.
+   * @param currentTime ZonedDateTime, current time.
    */
   @XmlElement
-  public void setCurrentTime(Calendar currentTime) {
+  public void setCurrentTime(ZonedDateTime currentTime) {
     this.currentTime = currentTime;
   }
 

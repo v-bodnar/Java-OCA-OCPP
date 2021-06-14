@@ -11,10 +11,10 @@ import eu.chargetime.ocpp.model.TestModel;
 import eu.chargetime.ocpp.model.core.BootNotificationConfirmation;
 import eu.chargetime.ocpp.model.core.BootNotificationRequest;
 import eu.chargetime.ocpp.model.core.RegistrationStatus;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Locale;
-import java.util.TimeZone;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,10 +24,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2015-2016 Thomas Volden <tv@chargetime.eu>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2016-2018 Thomas Volden
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -90,12 +92,7 @@ public class JSONCommunicatorTest {
     String aCalendar = "2016-04-28T07:16:11.988Z";
     String payload = "{\"calendarTest\":\"%s\"}";
 
-    Calendar someDate =
-        new Calendar.Builder()
-            .setDate(2016, 03, 28)
-            .setTimeOfDay(07, 16, 11, 988)
-            .setTimeZone(TimeZone.getTimeZone("GMT+00:00"))
-            .build();
+    ZonedDateTime someDate = ZonedDateTime.parse("2016-04-28T07:16:11.988Z");
 
     // When
     TestModel model =
@@ -247,12 +244,7 @@ public class JSONCommunicatorTest {
       throws Exception {
     // Given
     String currentTime = "2016-04-28T07:16:11.988Z";
-    Calendar someDate =
-        new Calendar.Builder()
-            .setDate(2016, 03, 28)
-            .setTimeOfDay(07, 16, 11, 988)
-            .setTimeZone(TimeZone.getTimeZone("GMT+00:00"))
-            .build();
+    ZonedDateTime someDate = ZonedDateTime.parse("2016-04-28T07:16:11.988Z");
 
     int interval = 300;
     RegistrationStatus status = RegistrationStatus.Accepted;
@@ -289,7 +281,7 @@ public class JSONCommunicatorTest {
       throws Exception {
     // Given
     String expected =
-        "{\"currentTime\":\"2016-04-28T06:41:13Z\",\"interval\":300,\"status\":\"Accepted\"}";
+        "{\"currentTime\":\"2016-04-28T06:41:13.720Z\",\"interval\":300,\"status\":\"Accepted\"}";
     BootNotificationConfirmation confirmation = new BootNotificationConfirmation();
     confirmation.setCurrentTime(createDateTimeInMillis(1461825673720L));
     confirmation.setInterval(300);
@@ -324,9 +316,7 @@ public class JSONCommunicatorTest {
     verify(transmitter, times(1)).send(anyString());
   }
 
-  private Calendar createDateTimeInMillis(long dateInMillis) {
-    Calendar dateTime = new GregorianCalendar(TimeZone.getTimeZone("GMT+00:00"));
-    dateTime.setTimeInMillis(dateInMillis);
-    return dateTime;
+  private ZonedDateTime createDateTimeInMillis(long dateInMillis) {
+    return Instant.ofEpochMilli(dateInMillis).atOffset(ZoneOffset.UTC).toZonedDateTime();
   }
 }

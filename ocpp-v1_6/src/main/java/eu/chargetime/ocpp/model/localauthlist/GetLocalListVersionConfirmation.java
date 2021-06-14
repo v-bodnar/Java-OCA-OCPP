@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.localauthlist;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,11 +34,21 @@ import java.util.Objects;
 
 public class GetLocalListVersionConfirmation implements Confirmation {
 
-  private int listVersion = -2;
+  private Integer listVersion = -2;
 
+  /**
+   * @deprecated use {@link #GetLocalListVersionConfirmation(Integer)} to be sure to set required
+   *     fields
+   */
+  @Deprecated
   public GetLocalListVersionConfirmation() {}
 
-  public GetLocalListVersionConfirmation(int listVersion) {
+  /**
+   * Handle required fields.
+   *
+   * @param listVersion int, version of localAuthList, see {@link #setListVersion(Integer)}
+   */
+  public GetLocalListVersionConfirmation(Integer listVersion) {
     this.listVersion = listVersion;
   }
 
@@ -46,7 +57,7 @@ public class GetLocalListVersionConfirmation implements Confirmation {
    *
    * @return String, version of localAuthList.
    */
-  public int getListVersion() {
+  public Integer getListVersion() {
     return listVersion;
   }
 
@@ -60,7 +71,7 @@ public class GetLocalListVersionConfirmation implements Confirmation {
    *
    * @param listVersion int, version of localAuthList.
    */
-  public void setListVersion(int listVersion) {
+  public void setListVersion(Integer listVersion) {
     if (listVersion < -1) {
       throw new PropertyConstraintException(listVersion, "listVersion must be >= -1");
     }
@@ -69,7 +80,7 @@ public class GetLocalListVersionConfirmation implements Confirmation {
 
   @Override
   public boolean validate() {
-    return listVersion >= -1;
+    return listVersion != null && listVersion >= -1;
   }
 
   @Override

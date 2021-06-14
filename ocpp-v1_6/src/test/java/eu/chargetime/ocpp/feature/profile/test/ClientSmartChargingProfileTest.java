@@ -7,8 +7,8 @@ import static org.mockito.Mockito.*;
 import eu.chargetime.ocpp.feature.profile.ClientSmartChargingEventHandler;
 import eu.chargetime.ocpp.feature.profile.ClientSmartChargingProfile;
 import eu.chargetime.ocpp.model.Confirmation;
-import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileConfirmation;
-import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest;
+import eu.chargetime.ocpp.model.core.ChargingProfile;
+import eu.chargetime.ocpp.model.smartcharging.*;
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +22,7 @@ import org.mockito.runners.MockitoJUnitRunner;
  * MIT License
  *
  * Copyright (C) 2017 Emil Christopher Solli Melar <emil@iconsultable.no>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -58,7 +59,7 @@ public class ClientSmartChargingProfileTest {
   @Test
   public void handleRequest_SetChargingProfileRequest_callsHandleSetChargingProfileRequest() {
     // Given
-    SetChargingProfileRequest request = new SetChargingProfileRequest();
+    SetChargingProfileRequest request = new SetChargingProfileRequest(0, new ChargingProfile());
 
     // When
     smartCharging.handleRequest(SESSION_NULL, request);
@@ -68,7 +69,7 @@ public class ClientSmartChargingProfileTest {
   }
 
   @Test
-  public void handleRequest_SetChargingProfileRequest_returnsSetChargingProfileRequest() {
+  public void handleRequest_SetChargingProfileRequest_returnsSetChargingProfileConfirmation() {
     // Given
     when(handler.handleSetChargingProfileRequest(any()))
         .thenReturn(new SetChargingProfileConfirmation());
@@ -79,5 +80,31 @@ public class ClientSmartChargingProfileTest {
 
     // Then
     assertThat(conf, instanceOf(SetChargingProfileConfirmation.class));
+  }
+
+  @Test
+  public void handleRequest_GetCompositeSchedule_callsHandleGetCompositeScheduleRequest() {
+    // Given
+    GetCompositeScheduleRequest request = new GetCompositeScheduleRequest(0, 0);
+
+    // When
+    smartCharging.handleRequest(SESSION_NULL, request);
+
+    // Then
+    verify(handler, times(1)).handleGetCompositeScheduleRequest(request);
+  }
+
+  @Test
+  public void handleRequest_GetCompositeScheduleRequest_returnGetCompositeScheduleConfirmation() {
+    // Given
+    when(handler.handleGetCompositeScheduleRequest(any()))
+        .thenReturn(new GetCompositeScheduleConfirmation(GetCompositeScheduleStatus.Accepted));
+    GetCompositeScheduleRequest request = new GetCompositeScheduleRequest(0, 0);
+
+    // When
+    Confirmation conf = smartCharging.handleRequest(SESSION_NULL, request);
+
+    // Then
+    assertThat(conf, instanceOf(GetCompositeScheduleConfirmation.class));
   }
 }

@@ -3,10 +3,12 @@ package eu.chargetime.ocpp.model.remotetrigger;
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2017 Emil Christopher Solli Melar <emil@iconsultable.no>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2017 Emil Christopher Solli Melar
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,12 +37,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "triggerMessageResponse")
 public class TriggerMessageConfirmation implements Confirmation {
+
   private TriggerMessageStatus status;
 
+  /**
+   * @deprecated use {@link #TriggerMessageConfirmation(TriggerMessageStatus)} to be sure to set
+   *     required fields
+   */
+  @Deprecated
   public TriggerMessageConfirmation() {}
 
   /**
-   * Set required values.
+   * Handle required fields.
    *
    * @param status the {@link TriggerMessageStatus}, see {@link #setStatus(TriggerMessageStatus)}.
    */

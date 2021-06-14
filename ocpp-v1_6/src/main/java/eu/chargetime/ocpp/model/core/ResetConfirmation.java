@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,14 +36,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 /** Sent by the Charge Point to the Central System in response to a {@link ResetRequest}. */
 @XmlRootElement
 public class ResetConfirmation implements Confirmation {
+
   private ResetStatus status;
 
+  /** @deprecated use {@link #ResetConfirmation(ResetStatus)} to be sure to set required fields */
+  @Deprecated
   public ResetConfirmation() {}
 
   /**
-   * Set required fields.
+   * Handle required fields.
    *
-   * @param status the {@link ResetStatus}, see {@link #setStatus(ResetStatus)}.
+   * @param status the {@link ResetStatus}, see {@link #setStatus(ResetStatus)}
    */
   public ResetConfirmation(ResetStatus status) {
     setStatus(status);
@@ -63,16 +67,6 @@ public class ResetConfirmation implements Confirmation {
   }
 
   /**
-   * This indicates whether the Charge Point is able to perform the reset.
-   *
-   * @return the {@link ResetStatus}.
-   */
-  @Deprecated
-  public ResetStatus objStatus() {
-    return status;
-  }
-
-  /**
    * Required. This indicates whether the Charge Point is able to perform the reset.
    *
    * @param status the {@link ResetStatus}.
@@ -80,6 +74,16 @@ public class ResetConfirmation implements Confirmation {
   @XmlElement
   public void setStatus(ResetStatus status) {
     this.status = status;
+  }
+
+  /**
+   * This indicates whether the Charge Point is able to perform the reset.
+   *
+   * @return the {@link ResetStatus}.
+   */
+  @Deprecated
+  public ResetStatus objStatus() {
+    return status;
   }
 
   @Override

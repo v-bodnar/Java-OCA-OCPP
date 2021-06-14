@@ -5,6 +5,7 @@ package eu.chargetime.ocpp.feature.profile.test;
    MIT License
 
    Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+   Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +35,9 @@ import static org.mockito.Mockito.verify;
 import eu.chargetime.ocpp.feature.*;
 import eu.chargetime.ocpp.feature.profile.ServerFirmwareManagementEventHandler;
 import eu.chargetime.ocpp.feature.profile.ServerFirmwareManagementProfile;
+import eu.chargetime.ocpp.model.firmware.DiagnosticsStatus;
 import eu.chargetime.ocpp.model.firmware.DiagnosticsStatusNotificationRequest;
+import eu.chargetime.ocpp.model.firmware.FirmwareStatus;
 import eu.chargetime.ocpp.model.firmware.FirmwareStatusNotificationRequest;
 import java.util.UUID;
 import org.hamcrest.core.Is;
@@ -101,7 +104,8 @@ public class ServerFirmwareManagementProfileTest extends ProfileTest {
   public void
       handleRequest_aDiagnosticsStatusNotificationRequest_callsHandleDiagnosticsStatusNotificationRequest() {
     // Given
-    DiagnosticsStatusNotificationRequest request = new DiagnosticsStatusNotificationRequest();
+    DiagnosticsStatusNotificationRequest request =
+        new DiagnosticsStatusNotificationRequest(DiagnosticsStatus.Idle);
     UUID sessionId = UUID.randomUUID();
 
     // When
@@ -116,7 +120,8 @@ public class ServerFirmwareManagementProfileTest extends ProfileTest {
   public void
       handleRequest_aFirmwareStatusNotificationRequest_callsHandleFirmwareStatusNotificationRequest() {
     // Given
-    FirmwareStatusNotificationRequest request = new FirmwareStatusNotificationRequest();
+    FirmwareStatusNotificationRequest request =
+        new FirmwareStatusNotificationRequest(FirmwareStatus.Downloaded);
     UUID sessionId = UUID.randomUUID();
 
     // When

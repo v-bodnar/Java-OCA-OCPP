@@ -7,6 +7,7 @@ package eu.chargetime.ocpp.model.reservation;
  *
  * Copyright (C) 2016 Thomas Volden <tv@chargetime.eu>
  * Copyright (C) 2018 Mikhail Kladkevich <kladmv@ecp-share.com>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,10 +37,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 /** Sent by the Charge Point to the Central System in response to an {@link ReserveNowRequest}. */
 @XmlRootElement(name = "reserveNowResponse")
 public class ReserveNowConfirmation implements Confirmation {
+
   private ReservationStatus status;
 
+  /**
+   * @deprecated use {@link #ReserveNowConfirmation(ReservationStatus)} to be sure to set required
+   *     fields
+   */
+  @Deprecated
   public ReserveNowConfirmation() {}
 
+  /**
+   * Handle required fields.
+   *
+   * @param status ReservationStatus, status of the reservation, see {@link
+   *     #setStatus(ReservationStatus)}
+   */
   public ReserveNowConfirmation(ReservationStatus status) {
     setStatus(status);
   }

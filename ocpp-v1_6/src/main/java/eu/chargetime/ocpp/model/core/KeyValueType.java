@@ -3,10 +3,12 @@ package eu.chargetime.ocpp.model.core;
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2015-2016 Thomas Volden <tv@chargetime.eu>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2016-2018 Thomas Volden
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -49,6 +51,25 @@ public class KeyValueType implements Validatable {
   private String key;
   private Boolean readonly;
   private String value;
+
+  /** @deprecated use {@link #KeyValueType(String, Boolean)} to be sure to set required fields */
+  @Deprecated
+  public KeyValueType() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param key String, max 50 characters, case insensitive, see {@link #setKey(String)}
+   * @param readonly Boolean, configuration is read only, see {@link #setReadonly(Boolean)}
+   */
+  public KeyValueType(String key, Boolean readonly) {
+    setKey(key);
+    setReadonly(readonly);
+  }
+
+  private static String createErrorMessage(int maxLength) {
+    return String.format(ERROR_MESSAGE, maxLength);
+  }
 
   /**
    * Name of the key.
@@ -134,10 +155,6 @@ public class KeyValueType implements Validatable {
   @Override
   public boolean validate() {
     return isValidKey(this.key) && isValidReadonly(this.readonly);
-  }
-
-  private static String createErrorMessage(int maxLength) {
-    return String.format(ERROR_MESSAGE, maxLength);
   }
 
   @Override

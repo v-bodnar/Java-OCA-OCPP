@@ -3,7 +3,7 @@ package eu.chargetime.ocpp.model.core;
 import eu.chargetime.ocpp.PropertyConstraintException;
 import eu.chargetime.ocpp.model.Validatable;
 import eu.chargetime.ocpp.utilities.MoreObjects;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,12 +55,29 @@ public class ChargingProfile implements Validatable {
   private ChargingProfilePurposeType chargingProfilePurpose;
   private ChargingProfileKindType chargingProfileKind;
   private RecurrencyKindType recurrencyKind;
-  private Calendar validFrom;
-  private Calendar validTo;
+  private ZonedDateTime validFrom;
+  private ZonedDateTime validTo;
   private ChargingSchedule chargingSchedule;
 
+  /**
+   * @deprecated use {@link #ChargingProfile(Integer, Integer, ChargingProfilePurposeType,
+   *     ChargingProfileKindType, ChargingSchedule)} to be sure to set required fields
+   */
+  @Deprecated
   public ChargingProfile() {}
 
+  /**
+   * Handle required values
+   *
+   * @param chargingProfileId Integer, see {@link #setChargingProfileId(Integer)}
+   * @param stackLevel Integer, see {@link #setStackLevel(Integer)}
+   * @param chargingProfilePurpose the {@link ChargingProfilePurposeType}, see {@link
+   *     #setChargingProfilePurpose(ChargingProfilePurposeType)}
+   * @param chargingProfileKind the {@link ChargingProfileKindType}, see {@link
+   *     #setChargingProfileKind(ChargingProfileKindType)}
+   * @param chargingSchedule the {@link ChargingSchedule}, see {@link
+   *     #setChargingSchedule(ChargingSchedule)}
+   */
   public ChargingProfile(
       Integer chargingProfileId,
       Integer stackLevel,
@@ -73,6 +91,19 @@ public class ChargingProfile implements Validatable {
     this.chargingSchedule = chargingSchedule;
   }
 
+  /**
+   * Handle required values
+   *
+   * @param chargingProfileId Integer, see {@link #setChargingProfileId(Integer)}
+   * @param stackLevel Integer, see {@link #setStackLevel(Integer)}
+   * @param chargingProfilePurpose the {@link ChargingProfilePurposeType}, see {@link
+   *     #setChargingProfilePurpose(ChargingProfilePurposeType)}
+   * @param chargingProfileKind the {@link ChargingProfileKindType}, see {@link
+   *     #setChargingProfileKind(ChargingProfileKindType)}
+   * @deprecated use {@link #ChargingProfile(Integer, Integer, ChargingProfilePurposeType,
+   *     ChargingProfileKindType, ChargingSchedule)} to be sure to set required fields
+   */
+  @Deprecated
   public ChargingProfile(
       Integer chargingProfileId,
       Integer stackLevel,
@@ -96,6 +127,20 @@ public class ChargingProfile implements Validatable {
     return valid;
   }
 
+  /**
+   * Unique identifier for this profile
+   *
+   * @return identifier for this profile
+   */
+  public Integer getChargingProfileId() {
+    return chargingProfileId;
+  }
+
+  /**
+   * Required. Unique identifier for this profile
+   *
+   * @param chargingProfileId Integer
+   */
   @XmlElement
   public void setChargingProfileId(Integer chargingProfileId) {
     if (chargingProfileId == null) {
@@ -105,19 +150,43 @@ public class ChargingProfile implements Validatable {
     this.chargingProfileId = chargingProfileId;
   }
 
-  public Integer getChargingProfileId() {
-    return chargingProfileId;
+  /**
+   * Only valid if ChargingProfilePurpose is set to TxProfile, the transactionId MAY be used to
+   * match the profile to a specific transaction.
+   *
+   * @return the transactionId
+   */
+  public Integer getTransactionId() {
+    return transactionId;
   }
 
+  /**
+   * Optional. Only valid if ChargingProfilePurpose is set to TxProfile, the transactionId MAY be
+   * used to match the profile to a specific transaction.
+   *
+   * @param transactionId Integer
+   */
   @XmlElement
   public void setTransactionId(Integer transactionId) {
     this.transactionId = transactionId;
   }
 
-  public Integer getTransactionId() {
-    return transactionId;
+  /**
+   * Value determining level in hierarchy stack of profiles. Higher values have precedence over
+   * lower values. Lowest level is 0.
+   *
+   * @return level in hierarchy stack of profiles
+   */
+  public Integer getStackLevel() {
+    return stackLevel;
   }
 
+  /**
+   * Required. Value determining level in hierarchy stack of profiles. Higher values have precedence
+   * over lower values. Lowest level is 0.
+   *
+   * @param stackLevel Integer
+   */
   @XmlElement
   public void setStackLevel(Integer stackLevel) {
     if (stackLevel == null || stackLevel < 0) {
@@ -127,87 +196,174 @@ public class ChargingProfile implements Validatable {
     this.stackLevel = stackLevel;
   }
 
-  public Integer getStackLevel() {
-    return stackLevel;
+  /**
+   * Unique identifier for this profile.
+   *
+   * @return identifier for this profile
+   */
+  public ChargingProfilePurposeType getChargingProfilePurpose() {
+    return chargingProfilePurpose;
   }
 
+  /**
+   * Required. Unique identifier for this profile.
+   *
+   * @param chargingProfilePurpose the {@link ChargingProfilePurposeType}
+   */
   @XmlElement
   public void setChargingProfilePurpose(ChargingProfilePurposeType chargingProfilePurpose) {
     this.chargingProfilePurpose = chargingProfilePurpose;
   }
 
-  public ChargingProfilePurposeType getChargingProfilePurpose() {
-    return chargingProfilePurpose;
-  }
-
+  /**
+   * Unique identifier for this profile.
+   *
+   * @return identifier for this profile
+   */
   @Deprecated
   public ChargingProfilePurposeType objChargingProfilePurpose() {
     return chargingProfilePurpose;
   }
 
+  /**
+   * Indicates the kind of schedule.
+   *
+   * @return kind of schedule
+   */
+  public ChargingProfileKindType getChargingProfileKind() {
+    return chargingProfileKind;
+  }
+
+  /**
+   * Required. Indicates the kind of schedule
+   *
+   * @param chargingProfileKind the {@link ChargingProfileKindType}
+   */
   @XmlElement
   public void setChargingProfileKind(ChargingProfileKindType chargingProfileKind) {
     this.chargingProfileKind = chargingProfileKind;
   }
 
-  public ChargingProfileKindType getChargingProfileKind() {
-    return chargingProfileKind;
-  }
-
+  /**
+   * Indicates the kind of schedule.
+   *
+   * @return kind of schedule
+   */
   @Deprecated
   public ChargingProfileKindType objChargingProfileKind() {
     return chargingProfileKind;
   }
 
+  /**
+   * Indicates the start point of a recurrence.
+   *
+   * @return start point of a recurrency
+   */
+  public RecurrencyKindType getRecurrencyKind() {
+    return recurrencyKind;
+  }
+
+  /**
+   * Required. Indicates the kind of schedule.
+   *
+   * @param recurrencyKind the {@link RecurrencyKindType}
+   */
   @XmlElement
   public void setRecurrencyKind(RecurrencyKindType recurrencyKind) {
     this.recurrencyKind = recurrencyKind;
   }
 
-  public RecurrencyKindType getRecurrencyKind() {
-    return recurrencyKind;
-  }
-
+  /**
+   * Indicates the start point of a recurrence.
+   *
+   * @return start point of a recurrency
+   */
   @Deprecated
   public RecurrencyKindType objRecurrencyKind() {
     return recurrencyKind;
   }
 
-  @XmlElement
-  public void setValidFrom(Calendar validFrom) {
-    this.validFrom = validFrom;
-  }
-
-  public Calendar getValidFrom() {
+  /**
+   * Point in time at which the profile starts to be valid. If absent, the profile is valid as soon
+   * as it is received by the Charge Point.
+   *
+   * @return Point in time at which the profile starts to be valid
+   */
+  public ZonedDateTime getValidFrom() {
     return validFrom;
   }
 
+  /**
+   * Optional. Point in time at which the profile starts to be valid. If absent, the profile is
+   * valid as soon as it is received by the Charge Point.
+   *
+   * @param validFrom the {@link ZonedDateTime}
+   */
+  @XmlElement
+  public void setValidFrom(ZonedDateTime validFrom) {
+    this.validFrom = validFrom;
+  }
+
+  /**
+   * Point in time at which the profile starts to be valid. If absent, the profile is valid as soon
+   * as it is received by the Charge Point.
+   *
+   * @return Point in time at which the profile starts to be valid
+   */
   @Deprecated
-  public Calendar objValidFrom() {
+  public ZonedDateTime objValidFrom() {
     return this.validFrom;
   }
 
+  /**
+   * Point in time at which the profile stops to be valid. If absent, the profile is valid until it
+   * is replaced by another profile
+   *
+   * @return Point in time at which the profile stops to be valid
+   */
+  public ZonedDateTime getValidTo() {
+    return validTo;
+  }
+
+  /**
+   * Optional. Point in time at which the profile stops to be valid. If absent, the profile is valid
+   * until it is replaced by another profile
+   *
+   * @param validTo the {@link ZonedDateTime}
+   */
   @XmlElement
-  public void setValidTo(Calendar validTo) {
+  public void setValidTo(ZonedDateTime validTo) {
     this.validTo = validTo;
   }
 
-  public Calendar getValidTo() {
-    return validTo;
-  }
-
+  /**
+   * Point in time at which the profile stops to be valid. If absent, the profile is valid until it
+   * is replaced by another profile
+   *
+   * @return Point in time at which the profile stops to be valid
+   */
   @Deprecated
-  public Calendar objValidTo() {
+  public ZonedDateTime objValidTo() {
     return validTo;
   }
 
+  /**
+   * Contains limits for the available power or current over time.
+   *
+   * @return charging schedule
+   */
+  public ChargingSchedule getChargingSchedule() {
+    return chargingSchedule;
+  }
+
+  /**
+   * Required. Contains limits for the available power or current over time.
+   *
+   * @param chargingSchedule the {@link ChargingSchedule}
+   */
   @XmlElement
   public void setChargingSchedule(ChargingSchedule chargingSchedule) {
     this.chargingSchedule = chargingSchedule;
-  }
-
-  public ChargingSchedule getChargingSchedule() {
-    return chargingSchedule;
   }
 
   @Override

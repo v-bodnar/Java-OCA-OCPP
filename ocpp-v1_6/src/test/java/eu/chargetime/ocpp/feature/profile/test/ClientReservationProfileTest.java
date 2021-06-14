@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.feature.profile.test;
 
    Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
    Copyright (C) 2018 Mikhail Kladkevich <kladmv@ecp-share.com>
+   Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
@@ -33,11 +34,14 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import eu.chargetime.ocpp.feature.*;
+import eu.chargetime.ocpp.feature.CancelReservationFeature;
+import eu.chargetime.ocpp.feature.Feature;
+import eu.chargetime.ocpp.feature.ReserveNowFeature;
 import eu.chargetime.ocpp.feature.profile.ClientReservationEventHandler;
 import eu.chargetime.ocpp.feature.profile.ClientReservationProfile;
 import eu.chargetime.ocpp.model.reservation.CancelReservationRequest;
 import eu.chargetime.ocpp.model.reservation.ReserveNowRequest;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,7 +83,7 @@ public class ClientReservationProfileTest extends ProfileTest {
   @Test
   public void handleRequest_aReserveNowRequest_callsHandleReserveNowRequest() {
     // Given
-    ReserveNowRequest request = new ReserveNowRequest();
+    ReserveNowRequest request = new ReserveNowRequest(0, ZonedDateTime.now(), "idTag", 0);
 
     // When
     profile.handleRequest(SESSION_NULL, request);
@@ -91,7 +95,7 @@ public class ClientReservationProfileTest extends ProfileTest {
   @Test
   public void handleRequest_aCancelReservationRequest_callsHandleCancelReservationRequest() {
     // Given
-    CancelReservationRequest request = new CancelReservationRequest();
+    CancelReservationRequest request = new CancelReservationRequest(0);
 
     // When
     profile.handleRequest(SESSION_NULL, request);

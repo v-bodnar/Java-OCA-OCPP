@@ -1,9 +1,6 @@
 package eu.chargetime.ocpp.feature.profile;
 
-import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileConfirmation;
-import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileRequest;
-import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileConfirmation;
-import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest;
+import eu.chargetime.ocpp.model.smartcharging.*;
 
 /*
  * ChargeTime.eu - Java-OCA-OCPP
@@ -11,6 +8,7 @@ import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest;
  * MIT License
  *
  * Copyright (C) 2017 Emil Christopher Solli Melar <emil@iconsultable.no>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,4 +47,14 @@ public interface ClientSmartChargingEventHandler {
    */
   ClearChargingProfileConfirmation handleClearChargingProfileRequest(
       ClearChargingProfileRequest request);
+
+  /**
+   * Handle a {@link GetCompositeScheduleRequest} and return a {@link
+   * GetCompositeScheduleConfirmation}.
+   *
+   * @param request incoming {@link GetCompositeScheduleRequest} to handle.
+   * @return outgoing {@link GetCompositeScheduleConfirmation} to reply with.
+   */
+  GetCompositeScheduleConfirmation handleGetCompositeScheduleRequest(
+      GetCompositeScheduleRequest request);
 }

@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,12 +46,19 @@ public class DataTransferConfirmation implements Confirmation {
   private String data;
 
   /**
-   * This indicates the success or failure of the data transfer.
-   *
-   * @return the {@link DataTransferStatus}.
+   * @deprecated use {@link #DataTransferConfirmation(DataTransferStatus)} to be sure to set
+   *     required fields
    */
-  public DataTransferStatus getStatus() {
-    return status;
+  @Deprecated
+  public DataTransferConfirmation() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param status the {@link DataTransferStatus}, see {@link #setStatus(DataTransferStatus)}
+   */
+  public DataTransferConfirmation(DataTransferStatus status) {
+    setStatus(status);
   }
 
   /**
@@ -58,8 +66,7 @@ public class DataTransferConfirmation implements Confirmation {
    *
    * @return the {@link DataTransferStatus}.
    */
-  @Deprecated
-  public DataTransferStatus objStatus() {
+  public DataTransferStatus getStatus() {
     return status;
   }
 
@@ -71,6 +78,16 @@ public class DataTransferConfirmation implements Confirmation {
   @XmlElement
   public void setStatus(DataTransferStatus status) {
     this.status = status;
+  }
+
+  /**
+   * This indicates the success or failure of the data transfer.
+   *
+   * @return the {@link DataTransferStatus}.
+   */
+  @Deprecated
+  public DataTransferStatus objStatus() {
+    return status;
   }
 
   /**

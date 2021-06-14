@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,12 +38,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "unlockConnectorResponse")
 public class UnlockConnectorConfirmation implements Confirmation {
+
   private UnlockStatus status;
 
+  /**
+   * @deprecated use {@link #UnlockConnectorConfirmation(UnlockStatus)} to be sure to set required
+   *     fields
+   */
+  @Deprecated
   public UnlockConnectorConfirmation() {}
 
   /**
-   * Set required values.
+   * Handle required fields.
    *
    * @param status the {@link UnlockStatus}, see {@link #setStatus(UnlockStatus)}.
    */
@@ -65,16 +72,6 @@ public class UnlockConnectorConfirmation implements Confirmation {
   }
 
   /**
-   * This indicates whether the Charge Point has unlocked the connector.
-   *
-   * @return the {@link UnlockStatus}
-   */
-  @Deprecated
-  public UnlockStatus objStatus() {
-    return status;
-  }
-
-  /**
    * Required. This indicates whether the Charge Point has unlocked the connector.
    *
    * @param status the {@link UnlockStatus}.
@@ -82,6 +79,16 @@ public class UnlockConnectorConfirmation implements Confirmation {
   @XmlElement
   public void setStatus(UnlockStatus status) {
     this.status = status;
+  }
+
+  /**
+   * This indicates whether the Charge Point has unlocked the connector.
+   *
+   * @return the {@link UnlockStatus}
+   */
+  @Deprecated
+  public UnlockStatus objStatus() {
+    return status;
   }
 
   @Override

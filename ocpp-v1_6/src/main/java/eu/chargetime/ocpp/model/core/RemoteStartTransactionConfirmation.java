@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,12 +38,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class RemoteStartTransactionConfirmation implements Confirmation {
   private RemoteStartStopStatus status;
 
+  /**
+   * @deprecated use {@link #RemoteStartTransactionConfirmation(RemoteStartStopStatus)} to be sure
+   *     to set required fields
+   */
+  @Deprecated
   public RemoteStartTransactionConfirmation() {}
 
   /**
-   * Set required fields.
+   * Handle required fields.
    *
-   * @param status status for request, see {@link #setStatus(RemoteStartStopStatus)}.
+   * @param status status for request, see {@link #setStatus(RemoteStartStopStatus)}
    */
   public RemoteStartTransactionConfirmation(RemoteStartStopStatus status) {
     setStatus(status);
@@ -58,16 +64,6 @@ public class RemoteStartTransactionConfirmation implements Confirmation {
   }
 
   /**
-   * Status indicating whether Charge Point accepts the request to start a transaction.
-   *
-   * @return the {@link RemoteStartStopStatus}.
-   */
-  @Deprecated
-  public RemoteStartStopStatus objStatus() {
-    return status;
-  }
-
-  /**
    * Required. Status indicating whether Charge Point accepts the request to start a transaction.
    *
    * @param status the {@link RemoteStartStopStatus}.
@@ -75,6 +71,16 @@ public class RemoteStartTransactionConfirmation implements Confirmation {
   @XmlElement
   public void setStatus(RemoteStartStopStatus status) {
     this.status = status;
+  }
+
+  /**
+   * Status indicating whether Charge Point accepts the request to start a transaction.
+   *
+   * @return the {@link RemoteStartStopStatus}.
+   */
+  @Deprecated
+  public RemoteStartStopStatus objStatus() {
+    return status;
   }
 
   @Override

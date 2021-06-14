@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * MIT License
  *
  * Copyright (C) 2017 Emil Christopher Solli Melar <emil@iconsultable.no>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,14 +38,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class SetChargingProfileRequest implements Request {
+
   private Integer connectorId;
   private ChargingProfile csChargingProfiles;
 
+  /**
+   * @deprecated use {@link #SetChargingProfileRequest(Integer, ChargingProfile)} to be sure to set
+   *     required fields
+   */
+  @Deprecated
   public SetChargingProfileRequest() {}
 
-  public SetChargingProfileRequest(Integer connectorId, ChargingProfile csChargingProfiles) {
-    this.connectorId = connectorId;
-    this.csChargingProfiles = csChargingProfiles;
+  /**
+   * Handle required fields.
+   *
+   * @param connectorId integer. value &gt; 0, see {@link #setConnectorId(Integer)}
+   * @param chargingProfile the {@link ChargingProfile}, see {@link
+   *     #setCsChargingProfiles(ChargingProfile)}
+   */
+  public SetChargingProfileRequest(Integer connectorId, ChargingProfile chargingProfile) {
+    setConnectorId(connectorId);
+    setCsChargingProfiles(chargingProfile);
   }
 
   /**

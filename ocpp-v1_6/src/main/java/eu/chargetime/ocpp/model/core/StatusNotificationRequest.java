@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +31,7 @@ import eu.chargetime.ocpp.PropertyConstraintException;
 import eu.chargetime.ocpp.model.Request;
 import eu.chargetime.ocpp.utilities.ModelUtil;
 import eu.chargetime.ocpp.utilities.MoreObjects;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -56,9 +57,36 @@ public class StatusNotificationRequest implements Request {
   private ChargePointErrorCode errorCode;
   private String info;
   private ChargePointStatus status;
-  private Calendar timestamp;
+  private ZonedDateTime timestamp;
   private String vendorId;
   private String vendorErrorCode;
+
+  /**
+   * @deprecated use {@link #StatusNotificationRequest(Integer, ChargePointErrorCode,
+   *     ChargePointStatus)} to be sure to set required fields
+   */
+  @Deprecated
+  public StatusNotificationRequest() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param connectorId integer, connector id. 0 = main controller, see {@link
+   *     #setConnectorId(Integer)}
+   * @param errorCode the {@link ChargePointErrorCode}, see {@link
+   *     #setErrorCode(ChargePointErrorCode)}
+   * @param status the {@link ChargePointStatus}, see {@link #setStatus(ChargePointStatus)}
+   */
+  public StatusNotificationRequest(
+      Integer connectorId, ChargePointErrorCode errorCode, ChargePointStatus status) {
+    setConnectorId(connectorId);
+    setErrorCode(errorCode);
+    setStatus(status);
+  }
+
+  private static String createErrorMessage(int maxLength) {
+    return String.format(ERROR_MESSAGE, maxLength);
+  }
 
   @Override
   public boolean validate() {
@@ -107,16 +135,6 @@ public class StatusNotificationRequest implements Request {
   }
 
   /**
-   * This contains the error code reported by the Charge Point.
-   *
-   * @return the {@link ChargePointErrorCode}.
-   */
-  @Deprecated
-  public ChargePointErrorCode objErrorCode() {
-    return errorCode;
-  }
-
-  /**
    * Required. This contains the error code reported by the Charge Point.
    *
    * @param errorCode the {@link ChargePointErrorCode}.
@@ -124,6 +142,16 @@ public class StatusNotificationRequest implements Request {
   @XmlElement
   public void setErrorCode(ChargePointErrorCode errorCode) {
     this.errorCode = errorCode;
+  }
+
+  /**
+   * This contains the error code reported by the Charge Point.
+   *
+   * @return the {@link ChargePointErrorCode}.
+   */
+  @Deprecated
+  public ChargePointErrorCode objErrorCode() {
+    return errorCode;
   }
 
   /**
@@ -159,16 +187,6 @@ public class StatusNotificationRequest implements Request {
   }
 
   /**
-   * This contains the current status of the Charge Point.
-   *
-   * @return the {@link ChargePointStatus}.
-   */
-  @Deprecated
-  public ChargePointStatus objStatus() {
-    return status;
-  }
-
-  /**
    * Required. This contains the current status of the Charge Point.
    *
    * @param status the {@link ChargePointStatus}.
@@ -179,13 +197,34 @@ public class StatusNotificationRequest implements Request {
   }
 
   /**
+   * This contains the current status of the Charge Point.
+   *
+   * @return the {@link ChargePointStatus}.
+   */
+  @Deprecated
+  public ChargePointStatus objStatus() {
+    return status;
+  }
+
+  /**
    * The time for which the status is reported. If absent time of receipt of the message will be
    * assumed.
    *
    * @return status time.
    */
-  public Calendar getTimestamp() {
+  public ZonedDateTime getTimestamp() {
     return timestamp;
+  }
+
+  /**
+   * Optional. The time for which the status is reported. If absent time of receipt of the message
+   * will be assumed.
+   *
+   * @param timestamp ZonedDateTime, status time.
+   */
+  @XmlElement
+  public void setTimestamp(ZonedDateTime timestamp) {
+    this.timestamp = timestamp;
   }
 
   /**
@@ -195,19 +234,8 @@ public class StatusNotificationRequest implements Request {
    * @return status time.
    */
   @Deprecated
-  public Calendar objTimestamp() {
+  public ZonedDateTime objTimestamp() {
     return timestamp;
-  }
-
-  /**
-   * Optional. The time for which the status is reported. If absent time of receipt of the message
-   * will be assumed.
-   *
-   * @param timestamp Calendar, status time.
-   */
-  @XmlElement
-  public void setTimestamp(Calendar timestamp) {
-    this.timestamp = timestamp;
   }
 
   /**
@@ -258,10 +286,6 @@ public class StatusNotificationRequest implements Request {
   @Override
   public boolean transactionRelated() {
     return false;
-  }
-
-  private static String createErrorMessage(int maxLength) {
-    return String.format(ERROR_MESSAGE, maxLength);
   }
 
   @Override

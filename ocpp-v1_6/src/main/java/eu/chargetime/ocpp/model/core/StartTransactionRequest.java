@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +31,7 @@ import eu.chargetime.ocpp.PropertyConstraintException;
 import eu.chargetime.ocpp.model.Request;
 import eu.chargetime.ocpp.utilities.ModelUtil;
 import eu.chargetime.ocpp.utilities.MoreObjects;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -49,7 +50,30 @@ public class StartTransactionRequest implements Request {
   private String idTag;
   private Integer meterStart;
   private Integer reservationId;
-  private Calendar timestamp;
+  private ZonedDateTime timestamp;
+
+  /**
+   * @deprecated use {@link #StartTransactionRequest(Integer, String, Integer, ZonedDateTime)} to be
+   *     sure to set required fields
+   */
+  @Deprecated
+  public StartTransactionRequest() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param connectorId integer. value &gt; 0, see {@link #setConnectorId(Integer)}
+   * @param idTag a String with max length 20, see {@link #setIdTag(String)}
+   * @param meterStart integer, Wh at start, see {@link #setMeterStart(Integer)}
+   * @param timestamp ZonedDateTime, start time, see {@link #setTimestamp(ZonedDateTime)}
+   */
+  public StartTransactionRequest(
+      Integer connectorId, String idTag, Integer meterStart, ZonedDateTime timestamp) {
+    setConnectorId(connectorId);
+    setIdTag(idTag);
+    setMeterStart(meterStart);
+    setTimestamp(timestamp);
+  }
 
   @Override
   public boolean validate() {
@@ -150,8 +174,18 @@ public class StartTransactionRequest implements Request {
    *
    * @return start time.
    */
-  public Calendar getTimestamp() {
+  public ZonedDateTime getTimestamp() {
     return timestamp;
+  }
+
+  /**
+   * Required. This contains the date and time on which the transaction is started.
+   *
+   * @param timestamp ZonedDateTime, start time.
+   */
+  @XmlElement
+  public void setTimestamp(ZonedDateTime timestamp) {
+    this.timestamp = timestamp;
   }
 
   /**
@@ -160,18 +194,8 @@ public class StartTransactionRequest implements Request {
    * @return start time.
    */
   @Deprecated
-  public Calendar objTimestamp() {
+  public ZonedDateTime objTimestamp() {
     return timestamp;
-  }
-
-  /**
-   * Required. This contains the date and time on which the transaction is started.
-   *
-   * @param timestamp Calendar, start time.
-   */
-  @XmlElement
-  public void setTimestamp(Calendar timestamp) {
-    this.timestamp = timestamp;
   }
 
   @Override

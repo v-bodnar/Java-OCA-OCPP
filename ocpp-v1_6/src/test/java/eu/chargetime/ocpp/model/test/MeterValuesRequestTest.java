@@ -1,13 +1,9 @@
 package eu.chargetime.ocpp.model.test;
 
 import static eu.chargetime.ocpp.utilities.TestUtilities.aList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import eu.chargetime.ocpp.PropertyConstraintException;
 import eu.chargetime.ocpp.model.core.MeterValue;
@@ -26,6 +22,7 @@ import org.mockito.runners.MockitoJUnitRunner;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -119,6 +116,8 @@ public class MeterValuesRequestTest {
   public void validate_meterValueIsSet_validatesMeterValue() {
     // Given
     request.setMeterValue(aList(meterValueMock));
+    request.setConnectorId(1);
+    when(meterValueMock.validate()).thenReturn(true);
 
     // When
     request.validate();

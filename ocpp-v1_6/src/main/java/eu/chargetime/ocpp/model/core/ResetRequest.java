@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +36,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 /** Sent by the Central System to the Charge Point. */
 @XmlRootElement
 public class ResetRequest implements Request {
+
   private ResetType type;
+
+  /** @deprecated use {@link #ResetRequest(ResetType)} to be sure to set required fields */
+  @Deprecated
+  public ResetRequest() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param type the {@link ResetType}, see {@link #setType(ResetType)}
+   */
+  public ResetRequest(ResetType type) {
+    setType(type);
+  }
 
   /**
    * This contains the type of reset that the Charge Point should perform.
@@ -47,16 +62,6 @@ public class ResetRequest implements Request {
   }
 
   /**
-   * This contains the type of reset that the Charge Point should perform.
-   *
-   * @return the {@link ResetType}.
-   */
-  @Deprecated
-  public ResetType objType() {
-    return type;
-  }
-
-  /**
    * Required. This contains the type of reset that the Charge Point should perform.
    *
    * @param type the {@link ResetType}.
@@ -64,6 +69,16 @@ public class ResetRequest implements Request {
   @XmlElement
   public void setType(ResetType type) {
     this.type = type;
+  }
+
+  /**
+   * This contains the type of reset that the Charge Point should perform.
+   *
+   * @return the {@link ResetType}.
+   */
+  @Deprecated
+  public ResetType objType() {
+    return type;
   }
 
   @Override

@@ -11,10 +11,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2015-2016 Thomas Volden <tv@chargetime.eu>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2016-2018 Thomas Volden
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -44,15 +46,17 @@ public class AuthorizeRequest implements Request {
 
   private String idTag;
 
+  /** @deprecated use {@link #AuthorizeRequest(String)} to be sure to set required fields */
+  @Deprecated
   public AuthorizeRequest() {}
 
   /**
    * Handle required fields.
    *
-   * @param idToken authorize id.
+   * @param idTag authorize id, see {@link #setIdTag(String)}
    */
-  public AuthorizeRequest(String idToken) {
-    setIdTag(idToken);
+  public AuthorizeRequest(String idTag) {
+    setIdTag(idTag);
   }
 
   /**

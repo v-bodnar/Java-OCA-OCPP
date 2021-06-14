@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.firmware;
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
  * Copyright (C) 2018 Mikhail Kladkevich <kladmv@ecp-share.com>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,10 +40,15 @@ public class FirmwareStatusNotificationRequest implements Request {
 
   private FirmwareStatus status;
 
+  /**
+   * @deprecated use {@link #FirmwareStatusNotificationRequest(FirmwareStatus)} to be sure to set
+   *     required fields
+   */
+  @Deprecated
   public FirmwareStatusNotificationRequest() {}
 
   /**
-   * Set required fields.
+   * Handle required fields.
    *
    * @param status Firmware status, see {@link #setStatus(FirmwareStatus)}.
    */

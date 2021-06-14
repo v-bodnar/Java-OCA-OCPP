@@ -4,11 +4,13 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
-import eu.chargetime.ocpp.feature.profile.ClientRemoteTriggerHandler;
+import eu.chargetime.ocpp.feature.profile.ClientRemoteTriggerEventHandler;
 import eu.chargetime.ocpp.feature.profile.ClientRemoteTriggerProfile;
 import eu.chargetime.ocpp.model.Confirmation;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageConfirmation;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
+import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType;
+import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageStatus;
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +24,7 @@ import org.mockito.runners.MockitoJUnitRunner;
  * MIT License
  *
  * Copyright (C) 2017 Emil Christopher Solli Melar <emil@iconsultable.no>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +51,7 @@ public class ClientRemoteTriggerProfileTest {
   private static final UUID SESSION_NULL = null;
   private ClientRemoteTriggerProfile profile;
 
-  @Mock private ClientRemoteTriggerHandler handler;
+  @Mock private ClientRemoteTriggerEventHandler handler;
 
   @Before
   public void setup() {
@@ -58,7 +61,8 @@ public class ClientRemoteTriggerProfileTest {
   @Test
   public void handleRequest_TriggerMessageReqest_callsHandleTriggerMessageReqestRequest() {
     // Given
-    TriggerMessageRequest request = new TriggerMessageRequest();
+    TriggerMessageRequest request =
+        new TriggerMessageRequest(TriggerMessageRequestType.BootNotification);
 
     // When
     profile.handleRequest(SESSION_NULL, request);
@@ -70,8 +74,10 @@ public class ClientRemoteTriggerProfileTest {
   @Test
   public void handleRequest_SetTriggerMessageRequest_returnsTriggerMessageRequest() {
     // Given
-    when(handler.handleTriggerMessageRequest(any())).thenReturn(new TriggerMessageConfirmation());
-    TriggerMessageRequest request = new TriggerMessageRequest();
+    when(handler.handleTriggerMessageRequest(any()))
+        .thenReturn(new TriggerMessageConfirmation(TriggerMessageStatus.Accepted));
+    TriggerMessageRequest request =
+        new TriggerMessageRequest(TriggerMessageRequestType.BootNotification);
 
     // When
     Confirmation conf = profile.handleRequest(SESSION_NULL, request);

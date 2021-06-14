@@ -3,10 +3,12 @@ package eu.chargetime.ocpp.model.core;
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2015-2016 Thomas Volden <tv@chargetime.eu>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2016-2018 Thomas Volden
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +31,7 @@ SOFTWARE.
 
 import eu.chargetime.ocpp.model.Validatable;
 import eu.chargetime.ocpp.utilities.MoreObjects;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -44,17 +46,41 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement
 @XmlType(propOrder = {"status", "expiryDate", "parentIdTag"})
 public class IdTagInfo implements Validatable {
-  private Calendar expiryDate;
+  private ZonedDateTime expiryDate;
   private String parentIdTag;
   private AuthorizationStatus status;
+
+  /** @deprecated use {@link #IdTagInfo(AuthorizationStatus)} to be sure to set required fields */
+  @Deprecated
+  public IdTagInfo() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param status the {@link AuthorizationStatus} for IdTag, see {@link
+   *     #setStatus(AuthorizationStatus)}
+   */
+  public IdTagInfo(AuthorizationStatus status) {
+    setStatus(status);
+  }
 
   /**
    * This contains the date at which idTag should be removed from the Authorization Cache.
    *
    * @return Expiry date.
    */
-  public Calendar getExpiryDate() {
+  public ZonedDateTime getExpiryDate() {
     return expiryDate;
+  }
+
+  /**
+   * Optional. This contains the date at which idTag should be removed from the Authorization Cache.
+   *
+   * @param expiryDate ZonedDateTime, expire date.
+   */
+  @XmlElement
+  public void setExpiryDate(ZonedDateTime expiryDate) {
+    this.expiryDate = expiryDate;
   }
 
   /**
@@ -63,18 +89,8 @@ public class IdTagInfo implements Validatable {
    * @return Expiry date.
    */
   @Deprecated
-  public Calendar objExpiryDate() {
+  public ZonedDateTime objExpiryDate() {
     return expiryDate;
-  }
-
-  /**
-   * Optional. This contains the date at which idTag should be removed from the Authorization Cache.
-   *
-   * @param expiryDate Calendar, expire date.
-   */
-  @XmlElement
-  public void setExpiryDate(Calendar expiryDate) {
-    this.expiryDate = expiryDate;
   }
 
   /**
@@ -106,16 +122,6 @@ public class IdTagInfo implements Validatable {
   }
 
   /**
-   * This contains whether the idTag has been accepted or not by the Central System.
-   *
-   * @return the {@link AuthorizationStatus} for IdTag.
-   */
-  @Deprecated
-  public AuthorizationStatus objStatus() {
-    return status;
-  }
-
-  /**
    * Required. This contains whether the idTag has been accepted or not by the Central System.
    *
    * @param status the {@link AuthorizationStatus} for IdTag.
@@ -123,6 +129,16 @@ public class IdTagInfo implements Validatable {
   @XmlElement
   public void setStatus(AuthorizationStatus status) {
     this.status = status;
+  }
+
+  /**
+   * This contains whether the idTag has been accepted or not by the Central System.
+   *
+   * @return the {@link AuthorizationStatus} for IdTag.
+   */
+  @Deprecated
+  public AuthorizationStatus objStatus() {
+    return status;
   }
 
   @Override

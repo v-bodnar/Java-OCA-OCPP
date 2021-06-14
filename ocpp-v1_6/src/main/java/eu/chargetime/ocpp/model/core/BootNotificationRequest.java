@@ -3,10 +3,12 @@ package eu.chargetime.ocpp.model.core;
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2015-2016 Thomas Volden <tv@chargetime.eu>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2016-2018 Thomas Volden
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -67,17 +69,26 @@ public class BootNotificationRequest implements Request {
   private String meterSerialNumber;
   private String meterType;
 
+  /**
+   * @deprecated use {@link #BootNotificationRequest(String, String)} to be sure to set required
+   *     fields
+   */
+  @Deprecated
   public BootNotificationRequest() {}
 
   /**
    * Handle required fields.
    *
-   * @param vendor Charge Point vendor, see {@link #setChargePointVendor(String)}.
-   * @param model Charge Point model, see {@link #setChargePointModel(String)}.
+   * @param chargePointVendor Charge Point vendor, see {@link #setChargePointVendor(String)}.
+   * @param chargePointModel Charge Point model, see {@link #setChargePointModel(String)}.
    */
-  public BootNotificationRequest(String vendor, String model) {
-    chargePointVendor = vendor;
-    chargePointModel = model;
+  public BootNotificationRequest(String chargePointVendor, String chargePointModel) {
+    setChargePointModel(chargePointModel);
+    setChargePointVendor(chargePointVendor);
+  }
+
+  private static String validationErrorMessage(int maxAllowedLength) {
+    return String.format(ERROR_MESSAGE, maxAllowedLength);
   }
 
   /**
@@ -310,10 +321,6 @@ public class BootNotificationRequest implements Request {
   @Override
   public boolean transactionRelated() {
     return false;
-  }
-
-  private static String validationErrorMessage(int maxAllowedLength) {
-    return String.format(ERROR_MESSAGE, maxAllowedLength);
   }
 
   @Override

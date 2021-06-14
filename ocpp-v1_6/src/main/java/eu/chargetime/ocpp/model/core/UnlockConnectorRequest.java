@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +37,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 /** Sent by the Central System to the Charge Point. */
 @XmlRootElement
 public class UnlockConnectorRequest implements Request {
+
   private Integer connectorId;
+
+  /** @deprecated use {@link #UnlockConnectorRequest(Integer)} to be sure to set required fields */
+  @Deprecated
+  public UnlockConnectorRequest() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param connectorId integer, value &gt; 0, see {@link #setConnectorId(Integer)}
+   */
+  public UnlockConnectorRequest(Integer connectorId) {
+    setConnectorId(connectorId);
+  }
 
   @Override
   public boolean validate() {

@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.localauthlist;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,10 +36,21 @@ public class SendLocalListConfirmation implements Confirmation {
 
   private UpdateStatus status;
 
+  /**
+   * @deprecated use {@link #SendLocalListConfirmation(UpdateStatus)} to be sure to set required
+   *     fields
+   */
+  @Deprecated
   public SendLocalListConfirmation() {}
 
+  /**
+   * Handle required fields.
+   *
+   * @param status {@link UpdateStatus}, status of localAuthList updating, see {@link
+   *     #setStatus(UpdateStatus)}
+   */
   public SendLocalListConfirmation(UpdateStatus status) {
-    this.status = status;
+    setStatus(status);
   }
 
   /**

@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,13 +45,26 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = {"connectorId", "transactionId", "meterValue"})
 public class MeterValuesRequest implements Request {
 
-  private int connectorId;
-  private int transactionId;
+  private Integer connectorId;
+  private Integer transactionId;
   private MeterValue[] meterValue;
+
+  /** @deprecated use {@link #MeterValuesRequest(Integer)} to be sure to set required fields */
+  @Deprecated
+  public MeterValuesRequest() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param connectorId integer, connector, see {@link #setConnectorId(Integer)}
+   */
+  public MeterValuesRequest(Integer connectorId) {
+    setConnectorId(connectorId);
+  }
 
   @Override
   public boolean validate() {
-    boolean valid = this.connectorId >= 0 && this.meterValue != null;
+    boolean valid = this.connectorId != null && this.connectorId >= 0 && this.meterValue != null;
 
     if (valid) {
       for (MeterValue current : this.meterValue) {
@@ -67,7 +81,7 @@ public class MeterValuesRequest implements Request {
    *
    * @return Connector
    */
-  public int getConnectorId() {
+  public Integer getConnectorId() {
     return connectorId;
   }
 
@@ -78,7 +92,7 @@ public class MeterValuesRequest implements Request {
    * @param connectorId integer, connector
    */
   @XmlElement
-  public void setConnectorId(int connectorId) {
+  public void setConnectorId(Integer connectorId) {
     if (connectorId < 0) {
       throw new PropertyConstraintException(connectorId, "connectorId must be >= 0");
     }
@@ -91,7 +105,7 @@ public class MeterValuesRequest implements Request {
    *
    * @return transaction id.
    */
-  public int getTransactionId() {
+  public Integer getTransactionId() {
     return transactionId;
   }
 
@@ -101,8 +115,17 @@ public class MeterValuesRequest implements Request {
    * @param transactionId integer, transaction id.
    */
   @XmlElement
-  public void setTransactionId(int transactionId) {
+  public void setTransactionId(Integer transactionId) {
     this.transactionId = transactionId;
+  }
+
+  /**
+   * The sampled meter values with timestamps.
+   *
+   * @return Array of {@link MeterValue}.
+   */
+  public MeterValue[] getMeterValue() {
+    return meterValue;
   }
 
   /**
@@ -115,15 +138,6 @@ public class MeterValuesRequest implements Request {
     this.meterValue = meterValue;
   }
 
-  /**
-   * The sampled meter values with timestamps.
-   *
-   * @return Array of {@link MeterValue}.
-   */
-  public MeterValue[] getMeterValue() {
-    return meterValue;
-  }
-
   @Override
   public boolean transactionRelated() {
     return true;
@@ -134,8 +148,8 @@ public class MeterValuesRequest implements Request {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     MeterValuesRequest that = (MeterValuesRequest) o;
-    return connectorId == that.connectorId
-        && transactionId == that.transactionId
+    return Objects.equals(connectorId, that.connectorId)
+        && Objects.equals(transactionId, that.transactionId)
         && Arrays.equals(meterValue, that.meterValue);
   }
 

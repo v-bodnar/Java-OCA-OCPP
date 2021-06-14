@@ -4,13 +4,11 @@ import static eu.chargetime.ocpp.utilities.TestUtilities.aList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import eu.chargetime.ocpp.model.core.MeterValue;
 import eu.chargetime.ocpp.model.core.SampledValue;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +21,7 @@ import org.mockito.runners.MockitoJUnitRunner;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,7 +56,7 @@ public class MeterValueTest {
   @Test
   public void setTimestamp_now_timestampIsSet() {
     // Given
-    Calendar now = Calendar.getInstance();
+    ZonedDateTime now = ZonedDateTime.now();
 
     // When
     meterValue.setTimestamp(now);
@@ -78,7 +77,7 @@ public class MeterValueTest {
   @Test
   public void validate_sampledValueIsSet_validatesSampledValue() {
     // Given
-    meterValue.setTimestamp(Calendar.getInstance());
+    meterValue.setTimestamp(ZonedDateTime.now());
     meterValue.setSampledValue(aList(sampledValueMock));
 
     // When
@@ -91,7 +90,7 @@ public class MeterValueTest {
   @Test
   public void validate_TimestampAndSampledValueIsValid_returnTrue() {
     // Given
-    meterValue.setTimestamp(Calendar.getInstance());
+    meterValue.setTimestamp(ZonedDateTime.now());
     meterValue.setSampledValue(aList(sampledValueMock));
 
     when(sampledValueMock.validate()).thenReturn(true);

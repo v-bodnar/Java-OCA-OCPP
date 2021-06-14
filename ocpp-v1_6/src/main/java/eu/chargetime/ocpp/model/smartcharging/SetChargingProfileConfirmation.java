@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.smartcharging;
  * MIT License
  *
  * Copyright (C) 2017 Emil Christopher Solli Melar <emil@iconsultable.no>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,10 +38,15 @@ public class SetChargingProfileConfirmation implements Confirmation {
 
   private ChargingProfileStatus status;
 
+  /**
+   * @deprecated use {@link #SetChargingProfileConfirmation(ChargingProfileStatus)} to be sure to
+   *     set required fields
+   */
+  @Deprecated
   public SetChargingProfileConfirmation() {}
 
   /**
-   * Set required values.
+   * Handle required fields.
    *
    * @param status the {@link ChargingProfileStatus}, see {@link #setStatus(ChargingProfileStatus)}.
    */
@@ -58,16 +64,6 @@ public class SetChargingProfileConfirmation implements Confirmation {
   }
 
   /**
-   * This indicates the success or failure of the change of the charging profile.
-   *
-   * @return the {@link ChargingProfileStatus}.
-   */
-  @Deprecated
-  public ChargingProfileStatus objStatus() {
-    return status;
-  }
-
-  /**
    * Required. This indicates the success or failure of the change of the charging profile.
    *
    * @param status the {@link ChargingProfileStatus}.
@@ -75,6 +71,16 @@ public class SetChargingProfileConfirmation implements Confirmation {
   @XmlElement
   public void setStatus(ChargingProfileStatus status) {
     this.status = status;
+  }
+
+  /**
+   * This indicates the success or failure of the change of the charging profile.
+   *
+   * @return the {@link ChargingProfileStatus}.
+   */
+  @Deprecated
+  public ChargingProfileStatus objStatus() {
+    return status;
   }
 
   @Override

@@ -2,20 +2,15 @@ package eu.chargetime.ocpp.model.test;
 
 import static eu.chargetime.ocpp.utilities.TestUtilities.aList;
 import static eu.chargetime.ocpp.utilities.TestUtilities.aString;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import eu.chargetime.ocpp.PropertyConstraintException;
 import eu.chargetime.ocpp.model.core.MeterValue;
 import eu.chargetime.ocpp.model.core.Reason;
 import eu.chargetime.ocpp.model.core.StopTransactionRequest;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,6 +23,7 @@ import org.junit.rules.ExpectedException;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -94,7 +90,7 @@ public class StopTransactionRequestTest {
   @Test
   public void setTimestamp_calendarNow_timestampIsSet() {
     // Given
-    Calendar now = Calendar.getInstance();
+    ZonedDateTime now = ZonedDateTime.now();
 
     // When
     request.setTimestamp(now);
@@ -152,7 +148,7 @@ public class StopTransactionRequestTest {
   public void validate_meterStopAndTimestampAndTransactionIdIsSet_returnTrue() {
     // Given
     request.setMeterStop(42);
-    request.setTimestamp(Calendar.getInstance());
+    request.setTimestamp(ZonedDateTime.now());
     request.setTransactionId(42);
 
     // When
@@ -179,7 +175,7 @@ public class StopTransactionRequestTest {
   public void validate_aMeterValueIsNotValid_returnFalse() {
     // Given
     request.setMeterStop(42);
-    request.setTimestamp(Calendar.getInstance());
+    request.setTimestamp(ZonedDateTime.now());
     request.setTransactionId(42);
 
     MeterValue meterValue = mock(MeterValue.class);

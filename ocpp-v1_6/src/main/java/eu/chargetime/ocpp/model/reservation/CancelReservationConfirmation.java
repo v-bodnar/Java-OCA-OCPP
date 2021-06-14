@@ -7,6 +7,7 @@ package eu.chargetime.ocpp.model.reservation;
  *
  * Copyright (C) 2016 Thomas Volden <tv@chargetime.eu>
  * Copyright (C) 2018 Mikhail Kladkevich <kladmv@ecp-share.com>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,10 +40,22 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "cancelReservationResponse")
 public class CancelReservationConfirmation implements Confirmation {
+
   private CancelReservationStatus status;
 
+  /**
+   * @deprecated use {@link #CancelReservationConfirmation(CancelReservationStatus)} to be sure to
+   *     set required fields
+   */
+  @Deprecated
   public CancelReservationConfirmation() {}
 
+  /**
+   * Handle required fields.
+   *
+   * @param status CancelReservationStatus, status of the request, see {@link
+   *     #setStatus(CancelReservationStatus)}
+   */
   public CancelReservationConfirmation(CancelReservationStatus status) {
     setStatus(status);
   }

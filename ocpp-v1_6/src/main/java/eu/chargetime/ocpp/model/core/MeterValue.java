@@ -2,8 +2,8 @@ package eu.chargetime.ocpp.model.core;
 
 import eu.chargetime.ocpp.model.Validatable;
 import eu.chargetime.ocpp.utilities.MoreObjects;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,8 +44,26 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = {"timestamp", "sampledValue"})
 public class MeterValue implements Validatable {
 
-  private Calendar timestamp;
+  private ZonedDateTime timestamp;
   private SampledValue[] sampledValue;
+
+  /**
+   * @deprecated use {@link #MeterValue(ZonedDateTime, SampledValue[])} to be sure to set required
+   *     fields
+   */
+  @Deprecated
+  public MeterValue() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param timestamp {@link ZonedDateTime} timestamp, see {@link #setTimestamp(ZonedDateTime)}
+   * @param sampledValue Array of {@link SampledValue}, see {@link #setSampledValue(SampledValue[])}
+   */
+  public MeterValue(ZonedDateTime timestamp, SampledValue[] sampledValue) {
+    setTimestamp(timestamp);
+    setSampledValue(sampledValue);
+  }
 
   @Override
   public boolean validate() {
@@ -63,8 +82,18 @@ public class MeterValue implements Validatable {
    *
    * @return original timestamp.
    */
-  public Calendar getTimestamp() {
+  public ZonedDateTime getTimestamp() {
     return timestamp;
+  }
+
+  /**
+   * Required. Timestamp for measured value(s).
+   *
+   * @param timestamp {@link ZonedDateTime} timestamp
+   */
+  @XmlElement
+  public void setTimestamp(ZonedDateTime timestamp) {
+    this.timestamp = timestamp;
   }
 
   /**
@@ -73,18 +102,8 @@ public class MeterValue implements Validatable {
    * @return original timestamp.
    */
   @Deprecated
-  public Calendar objTimestamp() {
+  public ZonedDateTime objTimestamp() {
     return timestamp;
-  }
-
-  /**
-   * Required. Timestamp for measured value(s).
-   *
-   * @param timestamp {@link Calendar} timestamp
-   */
-  @XmlElement
-  public void setTimestamp(Calendar timestamp) {
-    this.timestamp = timestamp;
   }
 
   /**

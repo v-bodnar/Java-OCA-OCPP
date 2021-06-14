@@ -5,6 +5,7 @@ package eu.chargetime.ocpp.feature.profile.test;
    MIT License
 
    Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+   Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
@@ -36,6 +37,7 @@ import eu.chargetime.ocpp.feature.*;
 import eu.chargetime.ocpp.feature.profile.ClientFirmwareManagementEventHandler;
 import eu.chargetime.ocpp.feature.profile.ClientFirmwareManagementProfile;
 import eu.chargetime.ocpp.model.firmware.*;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
@@ -100,7 +102,7 @@ public class ClientFirmwareManagementProfileTest extends ProfileTest {
   @Test
   public void handleRequest_aGetDiagnosticsRequest_callsHandleGetDiagnosticsRequest() {
     // Given
-    GetDiagnosticsRequest request = new GetDiagnosticsRequest();
+    GetDiagnosticsRequest request = new GetDiagnosticsRequest("location");
 
     // When
     profile.handleRequest(SESSION_NULL, request);
@@ -112,7 +114,7 @@ public class ClientFirmwareManagementProfileTest extends ProfileTest {
   @Test
   public void handleRequest_aUpdateFirmwareRequest_callsHandleUpdateFirmwareRequest() {
     // Given
-    UpdateFirmwareRequest request = new UpdateFirmwareRequest();
+    UpdateFirmwareRequest request = new UpdateFirmwareRequest("location", ZonedDateTime.now());
 
     // When
     profile.handleRequest(SESSION_NULL, request);

@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.localauthlist;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,9 +35,37 @@ import eu.chargetime.ocpp.utilities.MoreObjects;
 import java.util.Objects;
 
 public class AuthorizationData implements Validatable {
+
   private String idTag;
   private IdTagInfo idTagInfo;
 
+  /** @deprecated use {@link #AuthorizationData(String)} be sure to set required fields */
+  @Deprecated
+  public AuthorizationData() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param idTag String, the idTag, see {@link #setIdTag(String)}
+   */
+  public AuthorizationData(String idTag) {
+    setIdTag(idTag);
+  }
+
+  /**
+   * The identifier to which this authorization applies
+   *
+   * @return String the idTag
+   */
+  public String getIdTag() {
+    return idTag;
+  }
+
+  /**
+   * Required. The identifier to which this authorization applies
+   *
+   * @param idTag String, the idTag
+   */
   public void setIdTag(String idTag) {
     if (!ModelUtil.validate(idTag, 20)) {
       throw new PropertyConstraintException(idTag, "Exceeds limit of 20 chars");
@@ -45,8 +74,8 @@ public class AuthorizationData implements Validatable {
     this.idTag = idTag;
   }
 
-  public String getIdTag() {
-    return idTag;
+  public IdTagInfo getIdTagInfo() {
+    return idTagInfo;
   }
 
   public void setIdTagInfo(IdTagInfo idTagInfo) {
@@ -55,10 +84,6 @@ public class AuthorizationData implements Validatable {
     }
 
     this.idTagInfo = idTagInfo;
-  }
-
-  public IdTagInfo getIdTagInfo() {
-    return idTagInfo;
   }
 
   @Override

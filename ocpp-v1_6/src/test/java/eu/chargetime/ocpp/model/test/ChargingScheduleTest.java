@@ -9,7 +9,7 @@ import static org.mockito.Mockito.*;
 import eu.chargetime.ocpp.model.core.ChargingRateUnitType;
 import eu.chargetime.ocpp.model.core.ChargingSchedule;
 import eu.chargetime.ocpp.model.core.ChargingSchedulePeriod;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,6 +19,7 @@ import org.junit.Test;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -61,7 +62,7 @@ public class ChargingScheduleTest {
   @Test
   public void setStartSchedule_calendarNow_startScheduleIsSet() {
     // Given
-    Calendar now = Calendar.getInstance();
+    ZonedDateTime now = ZonedDateTime.now();
 
     // When
     chargingSchedule.setStartSchedule(now);

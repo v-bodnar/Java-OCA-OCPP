@@ -1,19 +1,13 @@
 package eu.chargetime.ocpp.model.test;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import eu.chargetime.ocpp.PropertyConstraintException;
-import eu.chargetime.ocpp.model.core.ChargingProfile;
-import eu.chargetime.ocpp.model.core.ChargingProfileKindType;
-import eu.chargetime.ocpp.model.core.ChargingProfilePurposeType;
-import eu.chargetime.ocpp.model.core.ChargingSchedule;
-import eu.chargetime.ocpp.model.core.RecurrencyKindType;
-import java.util.Calendar;
+import eu.chargetime.ocpp.model.core.*;
+import java.time.ZonedDateTime;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,6 +19,7 @@ import org.junit.rules.ExpectedException;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -161,7 +156,7 @@ public class ChargingProfileTest {
   @Test
   public void setValidFrom_calendarNow_validFromIsSet() {
     // Given
-    Calendar now = Calendar.getInstance();
+    ZonedDateTime now = ZonedDateTime.now();
 
     // When
     chargingProfile.setValidFrom(now);
@@ -173,7 +168,7 @@ public class ChargingProfileTest {
   @Test
   public void setValidTo_calendarNow_validToIsSet() {
     // Given
-    Calendar now = Calendar.getInstance();
+    ZonedDateTime now = ZonedDateTime.now();
 
     // When
     chargingProfile.setValidTo(now);

@@ -3,10 +3,12 @@ package eu.chargetime.ocpp.model.core;
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2015-2016 Thomas Volden <tv@chargetime.eu>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2016-2018 Thomas Volden
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,12 +42,19 @@ public class ClearCacheConfirmation implements Confirmation {
   private ClearCacheStatus status;
 
   /**
-   * Accepted if the Charge Point has executed the request, otherwise rejected.
-   *
-   * @return the {@link ClearCacheStatus}.
+   * @deprecated use {@link #ClearCacheConfirmation(ClearCacheStatus)} to be sure to set required
+   *     fields
    */
-  public ClearCacheStatus getStatus() {
-    return status;
+  @Deprecated
+  public ClearCacheConfirmation() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param status the {@link ClearCacheStatus}, see {@link #setStatus(ClearCacheStatus)}
+   */
+  public ClearCacheConfirmation(ClearCacheStatus status) {
+    setStatus(status);
   }
 
   /**
@@ -53,8 +62,7 @@ public class ClearCacheConfirmation implements Confirmation {
    *
    * @return the {@link ClearCacheStatus}.
    */
-  @Deprecated
-  public ClearCacheStatus objStatus() {
+  public ClearCacheStatus getStatus() {
     return status;
   }
 
@@ -66,6 +74,16 @@ public class ClearCacheConfirmation implements Confirmation {
   @XmlElement
   public void setStatus(ClearCacheStatus status) {
     this.status = status;
+  }
+
+  /**
+   * Accepted if the Charge Point has executed the request, otherwise rejected.
+   *
+   * @return the {@link ClearCacheStatus}.
+   */
+  @Deprecated
+  public ClearCacheStatus objStatus() {
+    return status;
   }
 
   @Override

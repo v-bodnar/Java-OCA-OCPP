@@ -3,57 +3,15 @@ package eu.chargetime.ocpp.feature.profile.test;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import eu.chargetime.ocpp.feature.AuthorizeFeature;
-import eu.chargetime.ocpp.feature.BootNotificationFeature;
-import eu.chargetime.ocpp.feature.ChangeAvailabilityFeature;
-import eu.chargetime.ocpp.feature.ChangeConfigurationFeature;
-import eu.chargetime.ocpp.feature.ClearCacheFeature;
-import eu.chargetime.ocpp.feature.DataTransferFeature;
-import eu.chargetime.ocpp.feature.Feature;
-import eu.chargetime.ocpp.feature.GetConfigurationFeature;
-import eu.chargetime.ocpp.feature.HeartbeatFeature;
-import eu.chargetime.ocpp.feature.MeterValuesFeature;
-import eu.chargetime.ocpp.feature.RemoteStartTransactionFeature;
-import eu.chargetime.ocpp.feature.RemoteStopTransactionFeature;
-import eu.chargetime.ocpp.feature.ResetFeature;
-import eu.chargetime.ocpp.feature.StartTransactionFeature;
-import eu.chargetime.ocpp.feature.StatusNotificationFeature;
-import eu.chargetime.ocpp.feature.StopTransactionFeature;
-import eu.chargetime.ocpp.feature.UnlockConnectorFeature;
+import eu.chargetime.ocpp.feature.*;
 import eu.chargetime.ocpp.feature.profile.ClientCoreEventHandler;
 import eu.chargetime.ocpp.feature.profile.ClientCoreProfile;
 import eu.chargetime.ocpp.model.Confirmation;
 import eu.chargetime.ocpp.model.Request;
-import eu.chargetime.ocpp.model.core.AuthorizeRequest;
-import eu.chargetime.ocpp.model.core.BootNotificationRequest;
-import eu.chargetime.ocpp.model.core.ChangeAvailabilityConfirmation;
-import eu.chargetime.ocpp.model.core.ChangeAvailabilityRequest;
-import eu.chargetime.ocpp.model.core.ChangeConfigurationConfirmation;
-import eu.chargetime.ocpp.model.core.ChangeConfigurationRequest;
-import eu.chargetime.ocpp.model.core.ChargePointErrorCode;
-import eu.chargetime.ocpp.model.core.ChargePointStatus;
-import eu.chargetime.ocpp.model.core.ClearCacheConfirmation;
-import eu.chargetime.ocpp.model.core.ClearCacheRequest;
-import eu.chargetime.ocpp.model.core.DataTransferConfirmation;
-import eu.chargetime.ocpp.model.core.DataTransferRequest;
-import eu.chargetime.ocpp.model.core.GetConfigurationConfirmation;
-import eu.chargetime.ocpp.model.core.GetConfigurationRequest;
-import eu.chargetime.ocpp.model.core.HeartbeatRequest;
-import eu.chargetime.ocpp.model.core.MeterValuesRequest;
-import eu.chargetime.ocpp.model.core.RemoteStartTransactionRequest;
-import eu.chargetime.ocpp.model.core.RemoteStopTransactionRequest;
-import eu.chargetime.ocpp.model.core.ResetRequest;
-import eu.chargetime.ocpp.model.core.StartTransactionRequest;
-import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
-import eu.chargetime.ocpp.model.core.StopTransactionRequest;
-import eu.chargetime.ocpp.model.core.UnlockConnectorRequest;
-import java.util.Calendar;
+import eu.chargetime.ocpp.model.core.*;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,10 +22,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2015-2016 Thomas Volden <tv@chargetime.eu>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2016-2018 Thomas Volden
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -103,13 +63,13 @@ public class ClientCoreProfileTest extends ProfileTest {
   @Test
   public void createAuthorizeRequest_withIdToken_returnsAuthorizeRequestWithIdTag() {
     // Given
-    String legalIdToken = "test123";
+    String legalIdTag = "test123";
 
     // When
-    AuthorizeRequest result = core.createAuthorizeRequest(legalIdToken);
+    AuthorizeRequest result = core.createAuthorizeRequest(legalIdTag);
 
     // Then
-    assertThat(result.getIdTag(), is(legalIdToken));
+    assertThat(result.getIdTag(), is(legalIdTag));
   }
 
   @Test
@@ -139,7 +99,7 @@ public class ClientCoreProfileTest extends ProfileTest {
   @Test
   public void createMeterValuesRequest_returnsMeterValuesRequest() {
     // When
-    Request result = core.createMeterValuesRequest(42, Calendar.getInstance(), "42");
+    Request result = core.createMeterValuesRequest(42, ZonedDateTime.now(), "42");
 
     // Then
     assertThat(result, instanceOf(MeterValuesRequest.class));
@@ -148,8 +108,7 @@ public class ClientCoreProfileTest extends ProfileTest {
   @Test
   public void createStartTransactionRequest_returnsStartTransactionRequest() {
     // When
-    Request result =
-        core.createStartTransactionRequest(42, "some token", 42, Calendar.getInstance());
+    Request result = core.createStartTransactionRequest(42, "some token", 42, ZonedDateTime.now());
 
     // Then
     assertThat(result, instanceOf(StartTransactionRequest.class));
@@ -169,10 +128,19 @@ public class ClientCoreProfileTest extends ProfileTest {
   @Test
   public void createStopTransactionRequest_returnsStopTransactionRequest() {
     // When
-    Request result = core.createStopTransactionRequest(42, Calendar.getInstance(), 42);
+    Request result = core.createStopTransactionRequest(42, ZonedDateTime.now(), 42);
 
     // Then
     assertThat(result, instanceOf(StopTransactionRequest.class));
+  }
+
+  @Test
+  public void getFeatureList_containsAuthorizeFeature() {
+    // When
+    Feature[] features = core.getFeatureList();
+
+    // then
+    assertThat(findFeature(features, "Authorize"), is(instanceOf(AuthorizeFeature.class)));
   }
 
   @Test
@@ -186,12 +154,53 @@ public class ClientCoreProfileTest extends ProfileTest {
   }
 
   @Test
-  public void getFeatureList_containsAuthorizeFeature() {
+  public void getFeatureList_containsChangeAvailabilityFeature() {
     // When
     Feature[] features = core.getFeatureList();
 
     // then
-    assertThat(findFeature(features, "Authorize"), is(instanceOf(AuthorizeFeature.class)));
+    assertThat(
+        findFeature(features, "ChangeAvailability"),
+        is(instanceOf(ChangeAvailabilityFeature.class)));
+  }
+
+  @Test
+  public void getFeatureList_containsChangeConfigurationFeature() {
+    // When
+    Feature[] features = core.getFeatureList();
+
+    // then
+    assertThat(
+        findFeature(features, "ChangeConfiguration"),
+        is(instanceOf(ChangeConfigurationFeature.class)));
+  }
+
+  @Test
+  public void getFeatureList_containsClearCacheFeature() {
+    // When
+    Feature[] features = core.getFeatureList();
+
+    // then
+    assertThat(findFeature(features, "ClearCache"), is(instanceOf(ClearCacheFeature.class)));
+  }
+
+  @Test
+  public void getFeatureList_containsDataTransfer() {
+    // When
+    Feature[] features = core.getFeatureList();
+
+    // Then
+    assertThat(findFeature(features, "DataTransfer"), is(instanceOf(DataTransferFeature.class)));
+  }
+
+  @Test
+  public void getFeatureList_containsGetConfigurationFeature() {
+    // When
+    Feature[] features = core.getFeatureList();
+
+    // then
+    assertThat(
+        findFeature(features, "GetConfiguration"), is(instanceOf(GetConfigurationFeature.class)));
   }
 
   @Test
@@ -287,7 +296,8 @@ public class ClientCoreProfileTest extends ProfileTest {
   @Test
   public void handleRequest_aChangeAvailabilityRequest_callsHandleChangeAvailabilityRequest() {
     // Given
-    ChangeAvailabilityRequest request = new ChangeAvailabilityRequest();
+    ChangeAvailabilityRequest request =
+        new ChangeAvailabilityRequest(0, AvailabilityType.Operative);
 
     // When
     core.handleRequest(SESSION_NULL, request);
@@ -300,7 +310,7 @@ public class ClientCoreProfileTest extends ProfileTest {
   public void
       handleRequest_aRemoteStartTransactionRequest_callsHandleRemoteStartTransactionRequest() {
     // Given
-    RemoteStartTransactionRequest request = new RemoteStartTransactionRequest();
+    RemoteStartTransactionRequest request = new RemoteStartTransactionRequest("test123");
 
     // When
     core.handleRequest(SESSION_NULL, request);
@@ -313,7 +323,7 @@ public class ClientCoreProfileTest extends ProfileTest {
   public void
       handleRequest_aRemoteStopTransactionRequest_callsHandleRemoteStopTransactionRequest() {
     // Given
-    RemoteStopTransactionRequest request = new RemoteStopTransactionRequest();
+    RemoteStopTransactionRequest request = new RemoteStopTransactionRequest(0);
 
     // When
     core.handleRequest(SESSION_NULL, request);
@@ -325,7 +335,7 @@ public class ClientCoreProfileTest extends ProfileTest {
   @Test
   public void handleRequest_aResetRequest_callsHandleResetRequest() {
     // Given
-    ResetRequest request = new ResetRequest();
+    ResetRequest request = new ResetRequest(ResetType.Hard);
 
     // When
     core.handleRequest(SESSION_NULL, request);
@@ -337,7 +347,7 @@ public class ClientCoreProfileTest extends ProfileTest {
   @Test
   public void handleRequest_anUnlockConnectorRequest_callsHandleUnlockConnectorRequest() {
     // Given
-    UnlockConnectorRequest request = new UnlockConnectorRequest();
+    UnlockConnectorRequest request = new UnlockConnectorRequest(1);
 
     // When
     core.handleRequest(SESSION_NULL, request);
@@ -350,25 +360,15 @@ public class ClientCoreProfileTest extends ProfileTest {
   public void handleRequest_aChangeAvailabilityRequest_returnsChangeAvailabilityConfirmation() {
     // Given
     when(handler.handleChangeAvailabilityRequest(any()))
-        .thenReturn(new ChangeAvailabilityConfirmation());
-    ChangeAvailabilityRequest request = new ChangeAvailabilityRequest();
+        .thenReturn(new ChangeAvailabilityConfirmation(AvailabilityStatus.Accepted));
+    ChangeAvailabilityRequest request =
+        new ChangeAvailabilityRequest(0, AvailabilityType.Operative);
 
     // When
     Confirmation conf = core.handleRequest(SESSION_NULL, request);
 
     // Then
     assertThat(conf, instanceOf(ChangeAvailabilityConfirmation.class));
-  }
-
-  @Test
-  public void getFeatureList_containsChangeAvailabilityFeature() {
-    // When
-    Feature[] features = core.getFeatureList();
-
-    // then
-    assertThat(
-        findFeature(features, "ChangeAvailability"),
-        is(instanceOf(ChangeAvailabilityFeature.class)));
   }
 
   @Test
@@ -400,7 +400,7 @@ public class ClientCoreProfileTest extends ProfileTest {
   @Test
   public void handleRequest_aDataTransferRequest_callsHandleDataTransferRequest() {
     // Given
-    DataTransferRequest request = new DataTransferRequest();
+    DataTransferRequest request = new DataTransferRequest("vendorId");
 
     // When
     core.handleRequest(SESSION_NULL, request);
@@ -413,7 +413,7 @@ public class ClientCoreProfileTest extends ProfileTest {
   public void handleRequest_aDataTransferRequest_returnDataTransferConfirmation() {
     // Given
     when(handler.handleDataTransferRequest(any())).thenReturn(new DataTransferConfirmation());
-    DataTransferRequest request = new DataTransferRequest();
+    DataTransferRequest request = new DataTransferRequest("vendorId");
 
     // When
     Confirmation conf = core.handleRequest(SESSION_NULL, request);
@@ -423,19 +423,9 @@ public class ClientCoreProfileTest extends ProfileTest {
   }
 
   @Test
-  public void getFeatureList_containsGetConfigurationFeature() {
-    // When
-    Feature[] features = core.getFeatureList();
-
-    // then
-    assertThat(
-        findFeature(features, "GetConfiguration"), is(instanceOf(GetConfigurationFeature.class)));
-  }
-
-  @Test
   public void handleRequest_aChangeConfigurationRequest_callsHandleChangeConfigurationRequest() {
     // Given
-    ChangeConfigurationRequest request = new ChangeConfigurationRequest();
+    ChangeConfigurationRequest request = new ChangeConfigurationRequest("key", "value");
 
     // When
     core.handleRequest(SESSION_NULL, request);
@@ -448,25 +438,14 @@ public class ClientCoreProfileTest extends ProfileTest {
   public void handleRequest_aChangeConfigurationRequest_returnsChangeConfigurationConfirmation() {
     // Given
     when(handler.handleChangeConfigurationRequest(any()))
-        .thenReturn(new ChangeConfigurationConfirmation());
-    ChangeConfigurationRequest request = new ChangeConfigurationRequest();
+        .thenReturn(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
+    ChangeConfigurationRequest request = new ChangeConfigurationRequest("key", "value");
 
     // When
     Confirmation conf = core.handleRequest(SESSION_NULL, request);
 
     // Then
     assertThat(conf, instanceOf(ChangeConfigurationConfirmation.class));
-  }
-
-  @Test
-  public void getFeatureList_containsChangeConfigurationFeature() {
-    // When
-    Feature[] features = core.getFeatureList();
-
-    // then
-    assertThat(
-        findFeature(features, "ChangeConfiguration"),
-        is(instanceOf(ChangeConfigurationFeature.class)));
   }
 
   @Test
@@ -492,23 +471,5 @@ public class ClientCoreProfileTest extends ProfileTest {
 
     // Then
     assertThat(conf, instanceOf(ClearCacheConfirmation.class));
-  }
-
-  @Test
-  public void getFeatureList_containsClearCacheFeature() {
-    // When
-    Feature[] features = core.getFeatureList();
-
-    // then
-    assertThat(findFeature(features, "ClearCache"), is(instanceOf(ClearCacheFeature.class)));
-  }
-
-  @Test
-  public void getFeatureList_containsDataTransfer() {
-    // When
-    Feature[] features = core.getFeatureList();
-
-    // Then
-    assertThat(findFeature(features, "DataTransfer"), is(instanceOf(DataTransferFeature.class)));
   }
 }

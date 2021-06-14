@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,8 +31,8 @@ import eu.chargetime.ocpp.PropertyConstraintException;
 import eu.chargetime.ocpp.model.Request;
 import eu.chargetime.ocpp.utilities.ModelUtil;
 import eu.chargetime.ocpp.utilities.MoreObjects;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -42,12 +43,33 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(
     propOrder = {"transactionId", "idTag", "timestamp", "meterStop", "reason", "transactionData"})
 public class StopTransactionRequest implements Request {
+
   private String idTag;
   private Integer meterStop;
-  private Calendar timestamp;
+  private ZonedDateTime timestamp;
   private Integer transactionId;
   private Reason reason;
   private MeterValue[] transactionData;
+
+  /**
+   * @deprecated use {@link #StopTransactionRequest(Integer, ZonedDateTime, Integer)} to be sure to
+   *     set required fields
+   */
+  @Deprecated
+  public StopTransactionRequest() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param meterStop integer, meter value in Wh, see {@link #setMeterStop(Integer)}
+   * @param timestamp ZonedDateTime, stop time, see {@link #setTimestamp(ZonedDateTime)}
+   * @param transactionId integer, transaction id, see {@link #setTransactionId(Integer)}
+   */
+  public StopTransactionRequest(Integer meterStop, ZonedDateTime timestamp, Integer transactionId) {
+    setMeterStop(meterStop);
+    setTimestamp(timestamp);
+    setTransactionId(transactionId);
+  }
 
   @Override
   public boolean validate() {
@@ -112,8 +134,18 @@ public class StopTransactionRequest implements Request {
    *
    * @return stop time.
    */
-  public Calendar getTimestamp() {
+  public ZonedDateTime getTimestamp() {
     return timestamp;
+  }
+
+  /**
+   * Required. This contains the date and time on which the transaction is stopped.
+   *
+   * @param timestamp ZonedDateTime, stop time.
+   */
+  @XmlElement
+  public void setTimestamp(ZonedDateTime timestamp) {
+    this.timestamp = timestamp;
   }
 
   /**
@@ -122,18 +154,8 @@ public class StopTransactionRequest implements Request {
    * @return stop time.
    */
   @Deprecated
-  public Calendar objTimestamp() {
+  public ZonedDateTime objTimestamp() {
     return timestamp;
-  }
-
-  /**
-   * Required. This contains the date and time on which the transaction is stopped.
-   *
-   * @param timestamp Calendar, stop time.
-   */
-  @XmlElement
-  public void setTimestamp(Calendar timestamp) {
-    this.timestamp = timestamp;
   }
 
   /**
@@ -166,16 +188,6 @@ public class StopTransactionRequest implements Request {
   }
 
   /**
-   * This contains the reason why the transaction was stopped.
-   *
-   * @return the {@link Reason}.
-   */
-  @Deprecated
-  public Reason objReason() {
-    return reason;
-  }
-
-  /**
    * Optional. This contains the reason why the transaction was stopped. MAY only be omitted when
    * the {@link Reason} is "Local".
    *
@@ -184,6 +196,16 @@ public class StopTransactionRequest implements Request {
   @XmlElement
   public void setReason(Reason reason) {
     this.reason = reason;
+  }
+
+  /**
+   * This contains the reason why the transaction was stopped.
+   *
+   * @return the {@link Reason}.
+   */
+  @Deprecated
+  public Reason objReason() {
+    return reason;
   }
 
   /**

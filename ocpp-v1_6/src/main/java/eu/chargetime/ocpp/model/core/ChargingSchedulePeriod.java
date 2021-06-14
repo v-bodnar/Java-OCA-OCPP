@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,11 +42,23 @@ public class ChargingSchedulePeriod implements Validatable {
   private Double limit;
   private Integer numberPhases = 3;
 
+  /**
+   * @deprecated use {@link #ChargingSchedulePeriod(Integer, Double)} to be sure to set required
+   *     fields
+   */
+  @Deprecated
   public ChargingSchedulePeriod() {}
 
+  /**
+   * Handle required fields.
+   *
+   * @param startPeriod integer, seconds from start of schedule, see {@link
+   *     #setStartPeriod(Integer)}
+   * @param limit decimal, power limit, see {@link #setLimit(Double)}
+   */
   public ChargingSchedulePeriod(Integer startPeriod, Double limit) {
-    this.startPeriod = startPeriod;
-    this.limit = limit;
+    setStartPeriod(startPeriod);
+    setLimit(limit);
   }
 
   @Override
@@ -54,6 +67,16 @@ public class ChargingSchedulePeriod implements Validatable {
     valid &= startPeriod != null;
     valid &= limit != null;
     return valid;
+  }
+
+  /**
+   * Start of the period, in seconds from the start of schedule. The value of StartPeriod also
+   * defines the stop time of the previous period.
+   *
+   * @return Seconds from start of schedule.
+   */
+  public Integer getStartPeriod() {
+    return startPeriod;
   }
 
   /**
@@ -68,13 +91,13 @@ public class ChargingSchedulePeriod implements Validatable {
   }
 
   /**
-   * Start of the period, in seconds from the start of schedule. The value of StartPeriod also
-   * defines the stop time of the previous period.
+   * Power limit during the schedule period, expressed in Amperes. Accepts at most one digit
+   * fraction (e.g. 8.1).
    *
-   * @return Seconds from start of schedule.
+   * @return Power limit.
    */
-  public Integer getStartPeriod() {
-    return startPeriod;
+  public Double getLimit() {
+    return limit;
   }
 
   /**
@@ -89,13 +112,12 @@ public class ChargingSchedulePeriod implements Validatable {
   }
 
   /**
-   * Power limit during the schedule period, expressed in Amperes. Accepts at most one digit
-   * fraction (e.g. 8.1).
+   * The number of phases that can be used for charging. Value is set to 3 by default.
    *
-   * @return Power limit.
+   * @return Number of phases.
    */
-  public Double getLimit() {
-    return limit;
+  public Integer getNumberPhases() {
+    return numberPhases;
   }
 
   /**
@@ -106,15 +128,6 @@ public class ChargingSchedulePeriod implements Validatable {
   @XmlElement
   public void setNumberPhases(Integer numberPhases) {
     this.numberPhases = numberPhases;
-  }
-
-  /**
-   * The number of phases that can be used for charging. Value is set to 3 by default.
-   *
-   * @return Number of phases.
-   */
-  public Integer getNumberPhases() {
-    return numberPhases;
   }
 
   @Override

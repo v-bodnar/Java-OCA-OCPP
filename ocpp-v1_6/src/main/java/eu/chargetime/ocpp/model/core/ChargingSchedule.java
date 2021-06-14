@@ -6,6 +6,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,8 +29,8 @@ package eu.chargetime.ocpp.model.core;
 
 import eu.chargetime.ocpp.model.Validatable;
 import eu.chargetime.ocpp.utilities.MoreObjects;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -46,18 +47,32 @@ import javax.xml.bind.annotation.XmlType;
       "minChargingRate"
     })
 public class ChargingSchedule implements Validatable {
+
   private Integer duration;
-  private Calendar startSchedule;
+  private ZonedDateTime startSchedule;
   private ChargingRateUnitType chargingRateUnit;
   private ChargingSchedulePeriod[] chargingSchedulePeriod;
   private Double minChargingRate;
 
+  /**
+   * @deprecated use {@link #ChargingSchedule(ChargingRateUnitType, ChargingSchedulePeriod[])} to be
+   *     sure to set required fields
+   */
+  @Deprecated
   public ChargingSchedule() {}
 
+  /**
+   * Handle required fields.
+   *
+   * @param chargingRateUnit the {@link ChargingRateUnitType}, see {@link
+   *     #setChargingRateUnit(ChargingRateUnitType)}
+   * @param chargingSchedulePeriod array of {@link ChargingSchedulePeriod}, see {@link
+   *     #setChargingSchedulePeriod(ChargingSchedulePeriod[])}
+   */
   public ChargingSchedule(
       ChargingRateUnitType chargingRateUnit, ChargingSchedulePeriod[] chargingSchedulePeriod) {
-    this.chargingRateUnit = chargingRateUnit;
-    this.chargingSchedulePeriod = chargingSchedulePeriod;
+    setChargingRateUnit(chargingRateUnit);
+    setChargingSchedulePeriod(chargingSchedulePeriod);
   }
 
   @Override
@@ -95,8 +110,19 @@ public class ChargingSchedule implements Validatable {
    *
    * @return start time.
    */
-  public Calendar getStartSchedule() {
+  public ZonedDateTime getStartSchedule() {
     return startSchedule;
+  }
+
+  /**
+   * Optional. Starting point of an absolute schedule. If absent the schedule will be relative to
+   * start of charging.
+   *
+   * @param startSchedule ZonedDateTime, start time.
+   */
+  @XmlElement
+  public void setStartSchedule(ZonedDateTime startSchedule) {
+    this.startSchedule = startSchedule;
   }
 
   /**
@@ -105,19 +131,8 @@ public class ChargingSchedule implements Validatable {
    * @return start time.
    */
   @Deprecated
-  public Calendar objStartSchedule() {
+  public ZonedDateTime objStartSchedule() {
     return startSchedule;
-  }
-
-  /**
-   * Optional. Starting point of an absolute schedule. If absent the schedule will be relative to
-   * start of charging.
-   *
-   * @param startSchedule Calendar, start time.
-   */
-  @XmlElement
-  public void setStartSchedule(Calendar startSchedule) {
-    this.startSchedule = startSchedule;
   }
 
   /**
@@ -130,16 +145,6 @@ public class ChargingSchedule implements Validatable {
   }
 
   /**
-   * The unit of measure Limit is expressed in.
-   *
-   * @return the {@link ChargingRateUnitType}.
-   */
-  @Deprecated
-  public ChargingRateUnitType objChargingRateUnit() {
-    return chargingRateUnit;
-  }
-
-  /**
    * Required. The unit of measure Limit is expressed in.
    *
    * @param chargingRateUnit the {@link ChargingRateUnitType}.
@@ -147,6 +152,16 @@ public class ChargingSchedule implements Validatable {
   @XmlElement
   public void setChargingRateUnit(ChargingRateUnitType chargingRateUnit) {
     this.chargingRateUnit = chargingRateUnit;
+  }
+
+  /**
+   * The unit of measure Limit is expressed in.
+   *
+   * @return the {@link ChargingRateUnitType}.
+   */
+  @Deprecated
+  public ChargingRateUnitType objChargingRateUnit() {
+    return chargingRateUnit;
   }
 
   /**

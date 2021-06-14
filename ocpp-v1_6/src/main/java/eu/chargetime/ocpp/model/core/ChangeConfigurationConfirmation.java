@@ -3,10 +3,12 @@ package eu.chargetime.ocpp.model.core;
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2015-2016 Thomas Volden <tv@chargetime.eu>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2016-2018 Thomas Volden
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +38,24 @@ import javax.xml.bind.annotation.XmlRootElement;
 /** Returned from Charge Point to Central System */
 @XmlRootElement(name = "changeConfigurationResponse")
 public class ChangeConfigurationConfirmation implements Confirmation {
+
   private ConfigurationStatus status;
+
+  /**
+   * @deprecated use {@link #ChangeConfigurationConfirmation(ConfigurationStatus)} to be sure to set
+   *     required fields
+   */
+  @Deprecated
+  public ChangeConfigurationConfirmation() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param status the {@link ConfigurationStatus}, see {@link #setStatus(ConfigurationStatus)}
+   */
+  public ChangeConfigurationConfirmation(ConfigurationStatus status) {
+    setStatus(status);
+  }
 
   /**
    * Returns whether configuration change has been accepted.
@@ -48,16 +67,6 @@ public class ChangeConfigurationConfirmation implements Confirmation {
   }
 
   /**
-   * Returns whether configuration change has been accepted.
-   *
-   * @return the {@link ConfigurationStatus}.
-   */
-  @Deprecated
-  public ConfigurationStatus objStatus() {
-    return status;
-  }
-
-  /**
    * Required. Returns whether configuration change has been accepted.
    *
    * @param status the {@link ConfigurationStatus}.
@@ -65,6 +74,16 @@ public class ChangeConfigurationConfirmation implements Confirmation {
   @XmlElement
   public void setStatus(ConfigurationStatus status) {
     this.status = status;
+  }
+
+  /**
+   * Returns whether configuration change has been accepted.
+   *
+   * @return the {@link ConfigurationStatus}.
+   */
+  @Deprecated
+  public ConfigurationStatus objStatus() {
+    return status;
   }
 
   @Override

@@ -2,10 +2,12 @@ package eu.chargetime.ocpp.test;
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2015-2016 Thomas Volden <tv@chargetime.eu>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2016-2018 Thomas Volden
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,28 +42,23 @@ import eu.chargetime.ocpp.model.reservation.*;
 import eu.chargetime.ocpp.model.smartcharging.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 
 public class FakeChargePoint {
-  private IClientAPI client;
-  private Confirmation receivedConfirmation;
-  private Request receivedRequest;
   private final ClientCoreProfile core;
   private final ClientSmartChargingProfile smartCharging;
   private final ClientRemoteTriggerProfile remoteTrigger;
   private final ClientFirmwareManagementProfile firmware;
   private final ClientLocalAuthListProfile localAuthList;
   private final ClientReservationProfile reservation;
+  private IClientAPI client;
+  private Confirmation receivedConfirmation;
+  private Request receivedRequest;
   private Throwable receivedException;
   private String url;
 
   public FakeChargePoint() throws MalformedURLException {
     this(clientType.JSON);
-  }
-
-  public enum clientType {
-    JSON,
-    SOAP
   }
 
   public FakeChargePoint(clientType type) throws MalformedURLException {
@@ -153,11 +150,18 @@ public class FakeChargePoint {
                 receivedRequest = request;
                 return new ClearChargingProfileConfirmation(ClearChargingProfileStatus.Accepted);
               }
+
+              @Override
+              public GetCompositeScheduleConfirmation handleGetCompositeScheduleRequest(
+                  GetCompositeScheduleRequest request) {
+                receivedRequest = request;
+                return new GetCompositeScheduleConfirmation(GetCompositeScheduleStatus.Accepted);
+              }
             });
 
     remoteTrigger =
         new ClientRemoteTriggerProfile(
-            new ClientRemoteTriggerHandler() {
+            new ClientRemoteTriggerEventHandler() {
               @Override
               public TriggerMessageConfirmation handleTriggerMessageRequest(
                   TriggerMessageRequest request) {
@@ -237,6 +241,11 @@ public class FakeChargePoint {
     client.addFeatureProfile(reservation);
   }
 
+  public enum clientType {
+    JSON,
+    SOAP
+  }
+
   public void connect() {
     try {
       client.connect(
@@ -275,7 +284,7 @@ public class FakeChargePoint {
 
   public void sendMeterValuesRequest() throws Exception {
     try {
-      Request request = core.createMeterValuesRequest(42, Calendar.getInstance(), "42");
+      Request request = core.createMeterValuesRequest(42, ZonedDateTime.now(), "42");
       send(request);
     } catch (PropertyConstraintException ex) {
       ex.printStackTrace();
@@ -284,8 +293,7 @@ public class FakeChargePoint {
 
   public void sendStartTransactionRequest() throws Exception {
     try {
-      Request request =
-          core.createStartTransactionRequest(41, "some id", 42, Calendar.getInstance());
+      Request request = core.createStartTransactionRequest(41, "some id", 42, ZonedDateTime.now());
       send(request);
     } catch (PropertyConstraintException ex) {
       ex.printStackTrace();
@@ -293,8 +301,7 @@ public class FakeChargePoint {
   }
 
   public void sendStopTransactionRequest() throws Exception {
-    StopTransactionRequest request =
-        core.createStopTransactionRequest(42, Calendar.getInstance(), 42);
+    StopTransactionRequest request = core.createStopTransactionRequest(42, ZonedDateTime.now(), 42);
     send(request);
   }
 

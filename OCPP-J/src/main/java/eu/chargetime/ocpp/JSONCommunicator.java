@@ -6,22 +6,19 @@ import eu.chargetime.ocpp.model.CallMessage;
 import eu.chargetime.ocpp.model.CallResultMessage;
 import eu.chargetime.ocpp.model.Message;
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2015-2016 Thomas Volden <tv@chargetime.eu>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2016-2018 Thomas Volden
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -79,10 +76,29 @@ public class JSONCommunicator extends Communicator {
     super(radio);
   }
 
+  private class ZonedDateTimeSerializer implements JsonSerializer<ZonedDateTime> {
+
+    @Override
+    public JsonElement serialize(
+        ZonedDateTime zonedDateTime, Type type, JsonSerializationContext jsonSerializationContext) {
+      return new JsonPrimitive(zonedDateTime.toString());
+    }
+  }
+
+  public class ZonedDateTimeDeserializer implements JsonDeserializer<ZonedDateTime> {
+
+    @Override
+    public ZonedDateTime deserialize(
+        JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
+        throws JsonParseException {
+      return ZonedDateTime.parse(jsonElement.getAsJsonPrimitive().getAsString());
+    }
+  }
+
   @Override
   public <T> T unpackPayload(Object payload, Class<T> type) throws Exception {
     GsonBuilder builder = new GsonBuilder();
-    builder.registerTypeAdapter(Calendar.class, new CalendarDeserializer());
+    builder.registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeDeserializer());
     Gson gson = builder.create();
     return gson.fromJson(payload.toString(), type);
   }
@@ -90,30 +106,9 @@ public class JSONCommunicator extends Communicator {
   @Override
   public Object packPayload(Object payload) {
     GsonBuilder builder = new GsonBuilder();
-    builder.registerTypeAdapter(GregorianCalendar.class, new CalendarSerializer());
+    builder.registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeSerializer());
     Gson gson = builder.create();
     return gson.toJson(payload);
-  }
-
-  private class CalendarSerializer implements JsonSerializer<Calendar> {
-    public JsonElement serialize(Calendar src, Type typeOfSrc, JsonSerializationContext context) {
-      SimpleDateFormat formatter =
-          new SimpleDateFormat(hasLongDateFormat ? DATE_FORMAT_WITH_MS : DATE_FORMAT);
-      formatter.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
-      return new JsonPrimitive(formatter.format(src.getTime()));
-    }
-  }
-
-  private class CalendarDeserializer implements JsonDeserializer<Calendar> {
-    public Calendar deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-        throws JsonParseException {
-      try {
-        String dateString = json.getAsJsonPrimitive().getAsString();
-        return GregorianCalendar.from(ZonedDateTime.parse(dateString));
-      } catch (DateTimeParseException e) {
-        throw new JsonParseException(e);
-      }
-    }
   }
 
   @Override

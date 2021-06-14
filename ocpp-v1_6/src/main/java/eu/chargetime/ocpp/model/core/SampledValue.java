@@ -5,6 +5,7 @@ package eu.chargetime.ocpp.model.core;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,13 +51,18 @@ public class SampledValue implements Validatable {
   private Location location;
   private String unit;
 
-  public SampledValue() {
+  /** @deprecated use {@link #SampledValue(String)} to be sure to set required fields */
+  @Deprecated
+  public SampledValue() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param value String, the value, see {@link #setValue(String)}
+   */
+  public SampledValue(String value) {
     try {
-      setContext("Sample.Periodic");
-      setFormat(ValueFormat.Raw);
-      setMeasurand("Energy.Active.Import.Register");
-      setLocation(Location.Outlet);
-      setUnit("Wh");
+      setValue(value);
     } catch (PropertyConstraintException ex) {
       logger.error("constructor of SampledValue failed", ex);
     }
@@ -96,7 +102,7 @@ public class SampledValue implements Validatable {
    * @return enum value for context.
    */
   public String getContext() {
-    return context;
+    return context == null ? "Sample.Periodic" : context;
   }
 
   /**
@@ -111,7 +117,7 @@ public class SampledValue implements Validatable {
   // TODO: Change to enum, solve format issue and change exception message.
   @XmlElement
   public void setContext(String context) {
-    if (!isValidContext(context)) {
+    if (context != null && !isValidContext(context)) {
       throw new PropertyConstraintException(context, "context is not properly defined");
     }
 
@@ -138,17 +144,7 @@ public class SampledValue implements Validatable {
    * @return the {@link ValueFormat}.
    */
   public ValueFormat getFormat() {
-    return format;
-  }
-
-  /**
-   * Raw or signed data.
-   *
-   * @return the {@link ValueFormat}.
-   */
-  @Deprecated
-  public ValueFormat objFormat() {
-    return format;
+    return format == null ? ValueFormat.Raw : format;
   }
 
   /**
@@ -162,12 +158,22 @@ public class SampledValue implements Validatable {
   }
 
   /**
+   * Raw or signed data.
+   *
+   * @return the {@link ValueFormat}.
+   */
+  @Deprecated
+  public ValueFormat objFormat() {
+    return format == null ? ValueFormat.Raw : format;
+  }
+
+  /**
    * Type of measurement.
    *
    * @return enum value of measurand.
    */
   public String getMeasurand() {
-    return measurand;
+    return measurand == null ? "Energy.Active.Import.Register" : measurand;
   }
 
   /**
@@ -187,7 +193,7 @@ public class SampledValue implements Validatable {
   // TODO: Change to enum, solve format issue and change exception message.
   @XmlElement
   public void setMeasurand(String measurand) {
-    if (!isValidMeasurand(measurand))
+    if (measurand != null && !isValidMeasurand(measurand))
       throw new PropertyConstraintException(measurand, "measurand value is not properly defined");
 
     this.measurand = measurand;
@@ -244,7 +250,7 @@ public class SampledValue implements Validatable {
   // TODO: Change to enum, solve format issue and change exception message.
   @XmlElement
   public void setPhase(String phase) {
-    if (!isValidPhase(phase)) {
+    if (phase != null && !isValidPhase(phase)) {
       throw new PropertyConstraintException(phase, "phase is not properly defined");
     }
 
@@ -262,17 +268,7 @@ public class SampledValue implements Validatable {
    * @return the {@link Location}.
    */
   public Location getLocation() {
-    return location;
-  }
-
-  /**
-   * Location of measurement.
-   *
-   * @return the {@link Location}.
-   */
-  @Deprecated
-  public Location objLocation() {
-    return location;
+    return location == null ? Location.Outlet : location;
   }
 
   /**
@@ -286,12 +282,22 @@ public class SampledValue implements Validatable {
   }
 
   /**
+   * Location of measurement.
+   *
+   * @return the {@link Location}.
+   */
+  @Deprecated
+  public Location objLocation() {
+    return location == null ? Location.Outlet : location;
+  }
+
+  /**
    * Unit of the value.
    *
    * @return Unit of Measure.
    */
   public String getUnit() {
-    return unit;
+    return unit == null && getMeasurand().startsWith("Energy") ? "Wh" : unit;
   }
 
   /**
@@ -307,7 +313,7 @@ public class SampledValue implements Validatable {
   // TODO: Change to enum, solve format issue and change exception message.
   @XmlElement
   public void setUnit(String unit) {
-    if (!isValidUnit(unit)) {
+    if (unit != null && !isValidUnit(unit)) {
       throw new PropertyConstraintException(unit, "unit is not properly defined");
     }
 

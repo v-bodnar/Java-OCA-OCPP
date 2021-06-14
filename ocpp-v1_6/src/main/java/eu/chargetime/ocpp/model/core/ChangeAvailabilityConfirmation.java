@@ -3,10 +3,12 @@ package eu.chargetime.ocpp.model.core;
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2015-2016 Thomas Volden <tv@chargetime.eu>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2016-2018 Thomas Volden
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,12 +42,18 @@ public class ChangeAvailabilityConfirmation implements Confirmation {
   private AvailabilityStatus status;
 
   /**
-   * This indicates whether the Charge Point is able to perform the availability change.
-   *
-   * @return The {@link AvailabilityStatus} of the connector.
+   * @deprecated use {@link #ChangeAvailabilityConfirmation(AvailabilityStatus)} to be sure to set
+   *     required fields
    */
-  public AvailabilityStatus getStatus() {
-    return status;
+  public ChangeAvailabilityConfirmation() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param status the {@link AvailabilityStatus}, see {@link #setStatus(AvailabilityStatus)}
+   */
+  public ChangeAvailabilityConfirmation(AvailabilityStatus status) {
+    setStatus(status);
   }
 
   /**
@@ -53,8 +61,7 @@ public class ChangeAvailabilityConfirmation implements Confirmation {
    *
    * @return The {@link AvailabilityStatus} of the connector.
    */
-  @Deprecated
-  public AvailabilityStatus objStatus() {
+  public AvailabilityStatus getStatus() {
     return status;
   }
 
@@ -68,15 +75,14 @@ public class ChangeAvailabilityConfirmation implements Confirmation {
     this.status = status;
   }
 
-  public ChangeAvailabilityConfirmation() {}
-
   /**
-   * Handle required fields.
+   * This indicates whether the Charge Point is able to perform the availability change.
    *
-   * @param status the {@link AvailabilityStatus}, see {@link #setStatus(AvailabilityStatus)}
+   * @return The {@link AvailabilityStatus} of the connector.
    */
-  public ChangeAvailabilityConfirmation(AvailabilityStatus status) {
-    this.status = status;
+  @Deprecated
+  public AvailabilityStatus objStatus() {
+    return status;
   }
 
   @Override

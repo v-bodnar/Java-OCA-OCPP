@@ -3,10 +3,12 @@ package eu.chargetime.ocpp.model.remotetrigger;
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2017 Emil Christopher Solli Melar <emil@iconsultable.no>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2017 Emil Christopher Solli Melar
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -42,10 +44,21 @@ public class TriggerMessageRequest implements Request {
   private Integer connectorId;
   private TriggerMessageRequestType requestedMessage;
 
+  /**
+   * @deprecated use {@link #TriggerMessageRequest(TriggerMessageRequestType)} to be sure to set
+   *     required fields
+   */
+  @Deprecated
   public TriggerMessageRequest() {}
 
-  public TriggerMessageRequest(TriggerMessageRequestType requestedMessage) {
-    this.requestedMessage = requestedMessage;
+  /**
+   * Handle required fields.
+   *
+   * @param triggerMessageRequestType {@link TriggerMessageRequestType}, see {@link
+   *     #setRequestedMessage(TriggerMessageRequestType)}
+   */
+  public TriggerMessageRequest(TriggerMessageRequestType triggerMessageRequestType) {
+    this.requestedMessage = triggerMessageRequestType;
   }
 
   /**

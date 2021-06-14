@@ -3,10 +3,12 @@ package eu.chargetime.ocpp.model.core;
 /*
 ChargeTime.eu - Java-OCA-OCPP
 Copyright (C) 2015-2016 Thomas Volden <tv@chargetime.eu>
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 MIT License
 
 Copyright (C) 2016-2018 Thomas Volden
+Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +32,7 @@ SOFTWARE.
 import eu.chargetime.ocpp.PropertyConstraintException;
 import eu.chargetime.ocpp.model.Confirmation;
 import eu.chargetime.ocpp.utilities.MoreObjects;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -45,26 +47,38 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = {"status", "currentTime", "interval"})
 public class BootNotificationConfirmation implements Confirmation {
 
-  private Calendar currentTime;
-  private int interval;
+  private ZonedDateTime currentTime;
+  private Integer interval;
   private RegistrationStatus status;
 
   /**
-   * Central System's current time.
-   *
-   * @return an instance of Calendar.
+   * @deprecated use {@link #BootNotificationConfirmation(ZonedDateTime, Integer,
+   *     RegistrationStatus)} to be sure to set required fields
    */
-  public Calendar getCurrentTime() {
-    return currentTime;
+  @Deprecated
+  public BootNotificationConfirmation() {}
+
+  /**
+   * Handle required fields.
+   *
+   * @param currentTime Central System’s current time, see {@link #setCurrentTime(ZonedDateTime)}
+   * @param interval heartbeat/delay interval in seconds. Min value 0, see {@link
+   *     #setInterval(Integer)}
+   * @param status Charge Points registration status, see {@link #setStatus(RegistrationStatus)}
+   */
+  public BootNotificationConfirmation(
+      ZonedDateTime currentTime, Integer interval, RegistrationStatus status) {
+    setCurrentTime(currentTime);
+    setInterval(interval);
+    setStatus(status);
   }
 
   /**
    * Central System's current time.
    *
-   * @return an instance of Calendar.
+   * @return an instance of {@link ZonedDateTime}.
    */
-  @Deprecated
-  public Calendar objCurrentTime() {
+  public ZonedDateTime getCurrentTime() {
     return currentTime;
   }
 
@@ -74,8 +88,18 @@ public class BootNotificationConfirmation implements Confirmation {
    * @param currentTime Central System’s current time.
    */
   @XmlElement
-  public void setCurrentTime(Calendar currentTime) {
+  public void setCurrentTime(ZonedDateTime currentTime) {
     this.currentTime = currentTime;
+  }
+
+  /**
+   * Central System's current time.
+   *
+   * @return an instance of {@link ZonedDateTime}.
+   */
+  @Deprecated
+  public ZonedDateTime objCurrentTime() {
+    return currentTime;
   }
 
   /**
@@ -85,7 +109,7 @@ public class BootNotificationConfirmation implements Confirmation {
    *
    * @return Heartbeat/delay interval in seconds.
    */
-  public int getInterval() {
+  public Integer getInterval() {
     return interval;
   }
 
@@ -97,8 +121,8 @@ public class BootNotificationConfirmation implements Confirmation {
    * @param interval heartbeat/delay interval in seconds. Min value 0.
    */
   @XmlElement
-  public void setInterval(int interval) {
-    if (interval <= 0) {
+  public void setInterval(Integer interval) {
+    if (interval < 0) {
       throw new PropertyConstraintException(interval, "interval be a positive value");
     }
 
@@ -138,7 +162,7 @@ public class BootNotificationConfirmation implements Confirmation {
   public boolean validate() {
     boolean valid = status != null;
     valid &= currentTime != null;
-    valid &= interval > 0;
+    valid &= interval != null && interval >= 0;
 
     return valid;
   }
@@ -148,7 +172,7 @@ public class BootNotificationConfirmation implements Confirmation {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     BootNotificationConfirmation that = (BootNotificationConfirmation) o;
-    return interval == that.interval
+    return Objects.equals(interval, that.interval)
         && Objects.equals(currentTime, that.currentTime)
         && status == that.status;
   }

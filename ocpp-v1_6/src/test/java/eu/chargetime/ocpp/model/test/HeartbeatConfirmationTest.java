@@ -5,7 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import eu.chargetime.ocpp.model.core.HeartbeatConfirmation;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,6 +15,7 @@ import org.junit.Test;
  * MIT License
  *
  * Copyright (C) 2016-2018 Thomas Volden <tv@chargetime.eu>
+ * Copyright (C) 2019 Kevin Raddatz <kevin.raddatz@valtech-mobility.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +46,7 @@ public class HeartbeatConfirmationTest {
   @Test
   public void setCurrentTime_now_currentTimeIsSet() {
     // Given
-    Calendar now = Calendar.getInstance();
+    ZonedDateTime now = ZonedDateTime.now();
 
     // When
     confirmation.setCurrentTime(now);
@@ -57,7 +58,7 @@ public class HeartbeatConfirmationTest {
   @Test
   public void validate_currentTimeIsSet_returnsTrue() {
     // Given
-    confirmation.setCurrentTime(Calendar.getInstance());
+    confirmation.setCurrentTime(ZonedDateTime.now());
 
     // When
     boolean isValid = confirmation.validate();
